@@ -1,0 +1,12 @@
+#branding h1 {
+    background: url(../img/logo.jpg) no-repeat -15px -21px;
+    text-indent: -999px;
+    overflow: hidden;
+    background-size: 250px;
+    height: 60px;
+    width: 200px;
+    margin-left: 10px;
+}
+.login #container {
+    width: 40em;
+}

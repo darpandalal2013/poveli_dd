@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block h1 %}Products{% endblock %}
+
+{% block messages %}
+<div class="row">
+    <div class="span11 offset1">
+        {% for message in messages %}
+            <div class="alert {% if message.tags and message.tags != 'warning' %}alert-{{ message.tags }}{% endif %}">
+            <a class="close" data-dismiss="alert">×</a>
+                {{ message|safe }}
+            </div>
+        {% endfor %}
+        {% block alerts %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    
+    <div class="dataTable">
+    <div class="row tableHeader hide">
+        <div class="span5 offset1">
+            <div class="productHeader">
+                <div class="span2">Preview</div>
+                <div class="span2">Product</div>
+            </div>
+        </div>
+
+        <div class="span5 offset1">
+            <div class="productHeader">
+                <div class="span2">Preview</div>
+                <div class="span2">Product</div>
+            </div>
+        </div>
+    </div>
+    {% for label in labels %}
+        {% cycle '<div class="row">' '' as rowstart %}
+        <div id="{{ label.upc }}" class="product">
+            <div class="span2 offset">
+                <a class="imgEditLink labelPreview" href="#editForm_{{label.upc}}"><img class="thumb" src="/company/1/get-bitmap/{{ label.upc }}/"></a>
+                <div class="productUpc"><div class="status {{ label.status }}"></div> [ {{ label.upc }} ]</div>
+                </div>
+
+            <div class="span3">
+                <div class="productTitle">{{ label.product_listing.title_disp|default:"Click Edit to Add..."}}</div>
+                <div class="productDesc">{{ label.product_listing.description_disp}}</div>
+                <div class="productUpc">[ {{ label.product_listing.product.upc }} ]</div>
+                <div class="numeric">${{ label.product_listing.price|floatformat:"2" }}</div>
+                </div>
+
+            <div class="span1 productImage">
+                <div class="btn-mini"><a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a></div>
+                <a class="imgEditLink" href="#editForm_{{label.upc}}"><img class="thumb" src="{{ label.product_listing.thumb }}"></a>
+                </div>
+
+            <div id="editForm_{{label.upc}}" class="editForm">
+                <div class="labelUpc">[ {{ label.upc }} ]</div>
+                <form action="" method="post">{% csrf_token %}
+                    <div class="row">
+                    <div class="span4">
+                        <input type="hidden" name="label_id" value="{{ label.id }}">
+                        <input type="hidden" name="product_listing_id" value="{{ label.product_listing.id }}">
+                        <input type="hidden" name="delete_label" value="">
+                    
+                        {{ label.form }}
+                    </div>
+                    <div class="span2 thumbs">
+                        {% if label.product_listing.thumb %}
+                        <div class="row productImage">
+                            <img class="thumb" src="{{ label.product_listing.thumb }}">
+                        </div>
+                        {% endif %}
+                        <div class="labels">
+                            {% for other_labels in label.product_listing.labels.all_active %}
+                                <div class="row">
+                                    <img class="thumb" src="/company/1/get-bitmap/{{ other_labels.upc }}/?r=l"><br>
+                                    [ {{ other_labels.template.title }} ]
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="form-actions form-actions pull-right">
+                        <a href="javscript:" class="btn btn-cancel modal_close">Cancel</a>
+                        <input class="btn btn-cancel btn-delete" type="button" value="Delete" />
+                        <input class="btn btn-create" type="submit" value="Save" />
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% cycle '' '</div>' as rowend %}
+    {% endfor %}
+    {% if not labels.count|divisibleby:2 %}</div>{% endif %}
+    </div>
+
+    <script>
+    $(function(){
+        $(".imgEditLink, .editLink").click(function(e){
+            var $status = $(this).closest(".product").find(".status"); 
+            if ($status.hasClass('U')){
+                alert("Sorry, you cannot edit items while being updated.");
+                if (this.href){
+                    $(this).data('dialogHref',this.href);
+                    this.href='';
+                }
+            }else if($(this).data('dialogHref')){
+                this.href=$(this).data('dialogHref');
+            }
+        });
+        
+        $(".editForm").draggable()/*.bind('mousewheel',function(e){
+            if(e.originalEvent && e.originalEvent.wheelDeltaY){
+                $(this).scrollTop($(this).scrollTop()-e.originalEvent.wheelDeltaY);
+                e.preventDefault();
+            }
+        })*/;
+        $(".product").each(function(){
+            $(this).find('.editLink, .imgEditLink').leanModal({overlay : 0.4, closeButton: ".modal_close"})
+        });
+        $(".btn-delete").click(function(){
+            if (confirm("Are you sure you want to delete this label?")){
+                $(this).closest('form').find('input[name=delete_label]').val('1');
+                $(this).closest('form').submit();
+            }
+        });
+        
+        var updateTimeout = 3000;
+        function updateStatuses(){
+            upcs = [];
+            $(".product").each(function(){upcs.push(this.id)});
+            $.ajax({
+                url: '{% url get_label_status client.id %}',
+                data: {upcs: upcs.join(',')},
+                cache: false,
+                dataType: 'json',
+                type: 'POST',
+                success: function(res){
+                    if (res && res.status){
+                        var statuses = res.status;
+                        for (var upc in statuses){
+                            $(".product#"+upc+" .status").removeClass().addClass("status").addClass(statuses[upc]);
+                        }
+                    }
+                }
+            })
+            setTimeout(updateStatuses, updateTimeout);
+        }
+        setTimeout(updateStatuses, updateTimeout);
+    });
+    </script>
+{% endblock %}

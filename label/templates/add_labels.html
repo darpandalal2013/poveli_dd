@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block h1 %}Add Products / Labels{% endblock %}
+
+{% block body %}
+    <p>Scan or enter each product UPC and its eLabel barcode. Click save when all products and labels are scanned.</p>
+    
+    <div class="template">
+        <div class="row">
+            <div class="span2"><label>Product #:</label></div>
+            <div class="span3"><input type="text" id="idbarcode_1_#" name="barcode_1_#"></div>
+            <div class="span3"><input type="text" id="idbarcode_2_#" name="barcode_2_#"></div>
+        </div>
+    </div>
+
+    <form class="dataTable barcodeForm" action="" method="post">{% csrf_token %}
+        <div class="row tableHeader">
+            <div class="span3 offset2">Product UPC</div>
+            <div class="span3">Label Barcode</div>
+        </div>
+
+        <div class="barcodes">
+        </div>
+        
+        <div class="row">
+            <br/>
+            <div class="span5">
+            <div class="form-actions pull-right">
+                <a href="{% url products client.id %}" class="btn btn-cancel modal_close">Cancel</a>
+                <input class="save btn btn-create" type="button" value="Save" />
+            </div>
+            </div>
+    </form>
+    
+    <script>
+        $(function(){
+            var rowCount = 0;
+            
+            $template = $(".template");
+            
+            $.fn.extend({
+                bindNextKey: function(){
+                    $(this).find('input').keypress(function(e){
+                        var code = (e.keyCode ? e.keyCode : e.which);
+                        if (code == 13 || code == 11 || code == 9){
+                            var parts = $(this).attr('id').split('_');
+                            var nextInput = parts[0] + '_' + ((parseInt(parts[1])%2)+1) + '_' + (parseInt(parts[2])+((parseInt(parts[1])+1)%2));
+                            if ($("#"+nextInput).length<=0){
+                                addNew();
+                            }
+                            $("#"+nextInput).focus();
+                        }
+                    });
+                    return this;
+                }
+            });
+            
+            function addNew(){
+                rowCount++;
+                $('.barcodes').append($('<div>').append($template.clone().html().replace(/#/g, rowCount)).bindNextKey());
+            }
+            
+            addNew();
+            
+            $('input.save').click(function(){$('form.barcodeForm').submit()});
+        });
+        
+    </script>
+{% endblock %}

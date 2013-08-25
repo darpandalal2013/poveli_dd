@@ -1,0 +1,16 @@
+Fabric==1.4.1
+Django==1.4.1
+django-common-helpers==0.3
+django-taggit==0.9.3
+mysql-python==1.2.3
+Pillow==1.7.8
+South==0.7.6
+python-cjson==1.0.5
+python-memcached==1.48
+django-view-cache-utils==0.1.1
+boto==2.4.1
+django-storages==1.1.5
+johnny-cache==0.3.3
+django-registration==0.8
+-e git://github.com/yourcelf/django-registration-defaults.git#egg=django-registration-defaults
+django-pagination==1.0.7

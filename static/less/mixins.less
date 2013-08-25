@@ -1,0 +1,393 @@
+// Global Mixins
+
+
+// ---------------------------------------------------------
+//// Font mixins
+.fs(@sizeValue) {
+    @pxValue: @sizeValue;
+    @remValue: (@sizeValue / 10);
+    font-size: ~"@{pxValue}px"; 
+    font-size: ~"@{remValue}rem";
+    line-height: 1.2em;
+}
+
+// Heading Fonts
+// h1 Settings
+.h1() { .fs(26); line-height: 1.25em; }
+// h2 Settings
+.h2() { .fs(24); line-height: 1.25em; }
+// h3 Settings
+.h3() { .fs(18); line-height: 1.2em; }
+// h4 Settings
+.h4() { .fs(15); line-height: 1.2em; }
+// h5 Settings
+.h5() { .fs(12); line-height: 1em; }
+// h6 Settings
+.h6() { .fs(10); line-height: 1em; }
+
+// Body Fonts
+// Extra Large Body Settings
+.s1() { .fs(24); line-height: 1.2em; }
+// Large Body Settings
+.s2() { .fs(18); line-height: 1.2em; }
+// Standard Body Settings
+.s3() { .fs(16); line-height: 1.2em; }
+// Small Body Settings
+.s4() { .fs(14); line-height: 1.2em; }
+// Extra small Settings
+.s4() { .fs(10); line-height: 1.2em; }
+
+
+
+// ---------------------------------------------------------
+//// Button Styles
+
+// New buttion styles
+.btn-style(@color, @bgColor, @hBgColor, @bdrColor, @fs, @ff) {
+    color: @color;
+    background-color:@bgColor;
+    border: 1px solid @bdrColor;
+    font-family: @ff;
+    .fs(@fs);
+    .vgrounded();
+    padding: 5px 20px;
+    text-shadow: none;
+    font-weight: normal;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        background-color: @hBgColor;
+    }
+}
+.btn-grey {    
+    .btn-style(@pvWhite, @pvTabGrey, @pvTabFont, @pvTabFont, 14, @pvMyriad);
+}
+// Support Shorthand Calls
+.btn-grey {    
+    .btn-grey;   
+}
+.btn-pink {
+    .btn-style(@pvWhite, @pvMag, @pvMagDark, @pvMagDark, 14, @pvMyriad);
+}
+// Support Shorthand Calls
+.btn-pink {
+    .btn-pink;
+}
+.large-play-btn {
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:50px;
+    height:50px;
+    margin-top:-25px;
+    margin-left:-25px;
+    background-image: url(../img/play-52x52.png);
+    background-position:-2px -2px;
+}
+
+.small-play-btn {
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:21px;
+    height:21px;
+    margin-top:-11px;
+    margin-left:-11px;
+    background-image: url(../img/play-22x22.png);
+    background-position:-1px -1px;
+}
+
+.dark-large-play-btn {
+    .large-play-btn;
+    background-image: url(../img/play-dark-52x52.png);
+}
+
+.dark-small-play-btn {
+    .small-play-btn;
+    background-image: url(../img/play-dark-22x22.png);
+}
+
+// Legacy Button Calls
+
+// Button Class
+.btn {
+    .btn-style(@grayDark, @btnBackground, @btnBorder, @btnBorder, 16, @pvMyriad);
+}
+.btn:hover, .btn.hover {
+    .btn-style(@grayDark, @btnBorder, @btnBorder, @btnBorder, 16, @pvMyriad);
+}
+// Focus state for keyboard and accessibility
+.btn:focus {
+  .tab-focus();
+}
+
+// Active state
+.btn.active,
+.btn:active {
+    .btn-style(@grayDark, @btnBorder, @btnBorder, @btnBorder, 16, @pvMyriad);
+}
+
+// Disabled state
+.btn.disabled,
+.btn[disabled] {
+    .btn-style(@grayDark, @btnBackgroundHighlight, @btnBackgroundHighlight, @btnBackgroundHighlight, 16, @pvMyriad);
+    cursor: default;
+    background-image: none;
+    .opacity(65);
+    .box-shadow(none);
+}
+
+
+
+// ---------------------------------------------------------
+//// CSS3 Mixins
+
+// Border Radius
+.border-radius(@radius) {
+    -webkit-border-radius: @radius;
+       -moz-border-radius: @radius;
+            border-radius: @radius;
+}
+    // VG Rounded Corners Default
+    .vgrounded(@topright: 2px, @bottomright: 2px, @bottomleft: 2px, @topleft: 2px) {
+        -webkit-border-top-right-radius: @topright;
+        -webkit-border-bottom-right-radius: @bottomright;
+        -webkit-border-bottom-left-radius: @bottomleft;
+        -webkit-border-top-left-radius: @topleft;
+        -moz-border-radius-topright: @topright;
+        -moz-border-radius-bottomright: @bottomright;
+        -moz-border-radius-bottomleft: @bottomleft;
+        -moz-border-radius-topleft: @topleft;
+        border-top-right-radius: @topright;
+        border-bottom-right-radius: @bottomright;
+        border-bottom-left-radius: @bottomleft;
+        border-top-left-radius: @topleft;
+        -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
+    }
+
+
+// Gradient Bar Colors for buttons and alerts
+.gradientBar(@primaryColor, @secondaryColor) {
+    #gradient > .vertical(@primaryColor, @secondaryColor);
+    border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
+    border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+}
+
+// Opacity
+.opacity(@opacity) {
+    opacity: @opacity / 100;
+    filter: ~"alpha(opacity=@{opacity})";
+}
+
+// Drop shadows
+.box-shadow(@shadow) {
+    -webkit-box-shadow: @shadow;
+       -moz-box-shadow: @shadow;
+            box-shadow: @shadow;
+}
+    // VG Shadow defaults
+    .shadow(@x-axis: 0, @y-axis: 0, @blur: 5px, @red: 107, @green: 107, @blue: 107, @alpha: 0.45, @inset: outset) {
+        -webkit-box-shadow: @x-axis @y-axis @blur rgba(@red, @blue, @blue, @alpha) @inset;
+           -moz-box-shadow: @x-axis @y-axis @blur rgba(@red, @blue, @blue, @alpha) @inset;
+                box-shadow: @x-axis @y-axis @blur rgba(@red, @blue, @blue, @alpha) @inset;
+    }
+
+
+// Test Shadow
+.text-shadow(@h-shadow: 1px, @v-shadow: 1px, @blur: 2px, @red: 0, @green: 0, @blue: 0, @alpha: .7) {
+    text-shadow: @h-shadow @v-shadow @blur rgba(@red,@green,@blue,@alpha);
+}
+
+// Transitions
+.transition(@transition) {
+    -webkit-transition: @transition;
+       -moz-transition: @transition;
+        -ms-transition: @transition;
+         -o-transition: @transition;
+            transition: @transition;
+}
+
+// Rotate
+.rotate(@deg: 90) {
+    /* Safari */
+    -webkit-transform: rotate(@deg * 1deg);
+    /* Firefox */
+    -moz-transform: rotate(@deg * 1deg);
+    //* IE */
+    //-ms-transform: rotate(@deg * 1deg);
+    /* Opera */
+    -o-transform: rotate(@deg * 1deg);
+    /* Internet Explorer */
+    @IEdeg: round(@deg / 90, 0);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=@IEdeg);
+}
+
+// Gradients
+.vggrad(@color: #f2f2f2, @top: #ececec, @bottom: #ffffff) {
+    background: @color;
+    background: -webkit-gradient(linear, left bottom, left top, color-stop(0, @top), color-stop(1, @bottom));
+    background: -ms-linear-gradient(bottom,  @top, @bottom);
+    background: -moz-linear-gradient(center bottom, @top 0%, @bottom 100%);
+    background: -o-linear-gradient(@bottom, @top);
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@top,@bottom));
+}
+.vgbg(@color: #f2f2f2, @top: #ffffff, @bottom: #ececec, @imgUrl: null) when (isstring(@imgUrl)) {
+    background: @color;
+    background-image: ~"url(@{imgUrl}), -webkit-gradient(linear, left top, left bottom, from(@{top}), to(@{bottom}))"; /* Saf4+, Chrome */
+    background-image: ~"url(@{imgUrl}), -webkit-linear-gradient(top, @{top}, @{bottom})"; /* Chrome 10+, Saf5.1+ */
+    background-image: ~"url(@{imgUrl}), -moz-linear-gradient(top, @{top}, @{bottom})"; /* FF3.6+ */
+    background-image: ~"url(@{imgUrl}), -ms-linear-gradient(top, @{top}, @{bottom})"; /* IE10 */
+    background-image: ~"url(@{imgUrl}), -o-linear-gradient(top, @{top}, @{bottom})"; /* Opera 11.10+ */
+    background-image: ~"url(@{imgUrl}), linear-gradient(top, @{top}, @{bottom})"; /* W3C */
+    background-position: bottom left;
+    background-repeat: repeat-x;
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@top,@bottom));
+} 
+.vgbg(@color: #f2f2f2, @top: #ffffff, @bottom: #ececec, @imgUrl: null) when not (isstring(@imgUrl)) {
+    background: @color;
+    background: ~"-webkit-gradient(linear, left top, left bottom, from(@{top}), to(@{bottom}))"; /* Saf4+, Chrome */
+    background: ~"-webkit-linear-gradient(top, @{top}, @{bottom})"; /* Chrome 10+, Saf5.1+ */
+    background: ~"-moz-linear-gradient(top, @{top}, @{bottom})"; /* FF3.6+ */
+    background: ~"-ms-linear-gradient(top, @{top}, @{bottom})"; /* IE10 */
+    background: ~"-o-linear-gradient(top, @{top}, @{bottom})"; /* Opera 11.10+ */
+    background: ~"linear-gradient(top, @{top}, @{bottom})"; /* W3C */
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@top,@bottom));
+}
+
+// Legacy Gradient ID 
+#gradient {
+    .vertical(@startColor: #555, @endColor: #333) {
+        background-color: mix(@startColor, @endColor, 60%);
+        background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
+        background-image: -ms-linear-gradient(top, @startColor, @endColor); // IE10
+        background-image: -webkit-gradient(linear, 0 0, 0 100%, from(@startColor), to(@endColor)); // Safari 4+, Chrome 2+
+        background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
+        background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
+        background-image: linear-gradient(top, @startColor, @endColor); // The standard
+        background-repeat: repeat-x;
+        filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down
+    }
+    .horizontal(@startColor: #555, @endColor: #333) {
+        background: (@startColor + @endColor) / 2; /* Old browsers */
+        background: -moz-linear-gradient(top,  @startColor 0%, @endColor 100%); /* FF3.6+ */
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@startColor), color-stop(100%,@endColor)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top,  @startColor 0%,@endColor 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top,  @startColor 0%,@endColor 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top,  @startColor 0%,@endColor 100%); /* IE10+ */
+        background: linear-gradient(to bottom,  @startColor 0%,@endColor 100%); /* W3C */
+        filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down
+    }
+}
+
+
+
+// ---------------------------------------------------------
+// Modifying html elements
+
+// Make something unselectable
+.unselectable() {
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: -moz-none;
+        -ms-user-select: none;
+            user-select: none;    
+}
+
+// Tab focus
+.tab-focus() {
+    // Default
+    outline: thin dotted #333;
+    // Webkit
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+// Clearfix
+.clearfix {
+    &:after {
+        *zoom: 1;
+        content: "";
+        display: inline-block;
+        text-indent: -9999px;
+        clear: both;
+    }
+}
+
+//Image replacement
+.ir {
+    font: 0/0 a;
+    text-shadow: none;
+    color: transparent;
+    display:block;
+}
+    // VG Specific Sprite with hover state
+    .vgsprite(@imgUrl, @x-start: 0, @y-start: 0, @y-offset: 24px, @width: 24px, @height: 24px) {
+        background: ~"url(@{imgUrl})" @x-start @y-start no-repeat;
+        display: inline-block;
+        min-width: @width;
+        height: @height;
+
+        &:hover, &.active {
+            background-position: @x-start -@y-offset;
+        }
+    }
+
+// Borders
+.border {
+    border: 1px solid @pvGrey;
+}
+.border-bottom {
+    border-bottom: 1px solid @pvGrey;
+}
+.border-left {
+    border-left: 1px solid @pvGrey;
+}
+.border-right {
+    border-right: 1px solid @pvGrey;
+}
+.border-top {
+    border-top: 1px solid @pvGrey;
+}
+
+
+
+// ---------------------------------------------------------
+//// Un Bootstrap the Element
+.unboot(){
+    background: none;
+    background-color: none;
+    background-image: none;
+    box-shadow: none;
+    border: none;
+}
+
+
+
+// ---------------------------------------------------------
+//// IE Fixes
+
+// IE7 likes to collapse whitespace on either side of the inline-block elements.
+// Ems because we're attempting to match the width of a space character. Left
+// version is for form buttons, which typically come after other elements, and
+// right version is for icons, which come before. Applying both is ok, but it will
+// mean that space between those elements will be .6em (~2 space characters) in IE7,
+// instead of the 1 space in other browsers.
+.ie7-restore-left-whitespace() {
+    *margin-left: .3em;
+
+    &:first-child {
+        *margin-left: 0;
+    }
+}
+
+// Reset filters for IE
+.reset-filter() {
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(enabled = false)"));
+}
+
+// IE7 inline-block
+.ie7-inline-block() {
+    *display: inline; /* IE7 inline-block hack */
+    *zoom: 1;
+}

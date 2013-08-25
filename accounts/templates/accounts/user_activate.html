@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block body_id %}activate_user{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h1>Activate User Account</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span4">
+                <form class="form-stacked" action="" method="post">{% csrf_token %}
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                        {% render_form_field field %}
+                    {% endfor %}
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

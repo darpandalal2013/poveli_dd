@@ -1,0 +1,35 @@
+{% extends 'registration/registration_base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block body_id %}login{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="span12">
+            <div class="page-header">
+                <h1>Sign In to Your Account</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span4">
+            <p><strong>IMPORTANT &mdash;</strong> You must have an account to continue.</p>
+            {% if form.errors %}
+                <div class="alert alert-error" data-alert="alert">
+                    <a class="close" href="#">x</a>
+                    <p><strong>Oops!</strong> Please try again.</p>
+                </div>
+            {% endif %}
+            {% include 'registration/fragments/login_form.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer_scripts %}
+    <script>
+        $(function() {
+            $('input#id_username').focus();
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'administration/base.html' %}
+
+{% load custom_tags %}
+
+{% block body_id %}create_client{% endblock %}
+
+{% block sub_content %}
+    <div class="row">
+        <div class="span4">
+            <p>You can create a new client in this screen. No email is sent to the actual client just yet. Since you're creating this client, you will automagically get access to the client dashboard.</p>
+            <form class="rcol_form" action="" method="post">{% csrf_token %}
+                {% for field in form %}
+                    {% render_form_field field %}
+                {% endfor %}
+
+                <div class="form-actions">
+                    <a href="{% url administration_home %}" class="btn btn-cancel">Cancel</a>
+                    <button type="submit" class="btn btn-save">Create Client</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

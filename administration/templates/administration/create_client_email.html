@@ -1,0 +1,14 @@
+Hello,
+
+this is just a kind reminder about a new Company created in Povelli platform:
+
+Company details:
+
+name: {{ client.name }}
+phone: {{ client.phone }}
+email: {{ client.email }}
+creation date: {{ client.created_on }}
+creator: {{ creator_name }}
+
+You can access it at the next url:
+{% url dashboard_main client.id  %}

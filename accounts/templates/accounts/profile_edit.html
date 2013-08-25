@@ -1,0 +1,20 @@
+{% extends 'accounts/base_edit.html' %}
+
+{% load custom_tags %}
+
+{% block tab_content %}
+    <fieldset class="tab-pane active" id="tab_my_account">
+        <form class="rcol_form horizontal" action="" method="post">{% csrf_token %}
+            <h2 class="title">My Account</h2>
+            <hr>
+            {% for field in form %}
+                {% render_form_field field %}
+            {% endfor %}
+            <div class="form-actions pull-right">
+                <a href="{% url auth_password_change %}" class="btn btn-pink">Change Password</a>
+                <button type="submit" class="btn btn-save">Save</button>
+            </div>
+        </form>
+        <br><br>
+    </fieldset>
+{% endblock %}

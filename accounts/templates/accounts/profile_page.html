@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block body %}
+    <div class="container-fluid"> <!-- if no sidebar, then remove .fluid -->
+        <div class="sidebar">
+            <div class="well">
+                <ul>
+                    {% if this_user == request.user %}
+                        <li><a href="{% url profile_edit client.uid %}">Edit your profile</a></li>
+                        <li><a href="{% url auth_password_change %}">Change Password</a></li>
+                        <li><a href="{% url users_list client.uid %}">Manage Users</a></li>
+                    {% endif %}
+                        <li>Username: {{this_user.username}}
+                        <li>Real name: {{this_user.first_name }} {{ this_user.last_name }}</li>
+                    {% if this_user.get_profile.picture %}
+                        <li><p>Thumbnail:</p><img src="{{ this_user.get_profile.thumbnail.url }}"></li>
+                        <li><p>Medium Size:</p><img src="{{ this_user.get_profile.medium.url }}"></li>
+                        <li><p>Large Size:</p><img src="{{ this_user.get_profile.large.url }}"></li>
+                        <li><p>Original Size:</p><img src="{{ this_user.get_profile.picture.url }}"></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    	<div class="content">
+    	</div>
+    </div>
+{% endblock %}

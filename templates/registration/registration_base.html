@@ -1,0 +1,10 @@
+{% extends 'html_wrapper.html' %}
+
+{% block wrapped_content %}
+
+    <div id="registration" class="container">
+        <a class="brand" href="{% if client %}{% url dashboard_main client.uid %}{% else %}{% url home_redirector %}{% endif %}">Povelli</a>
+		{% block body %}{% endblock %}
+	</div>
+
+{% endblock %}

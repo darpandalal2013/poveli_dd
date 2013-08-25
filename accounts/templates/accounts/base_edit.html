@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block body_id %}account{% endblock %}
+
+{% block body %}
+    {% url profile_edit client.id as profile_edit_url %}
+    {% url users_list client.id as users_url %}
+    {% url user_create client.id as user_create_url %}
+
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h1>Account</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span12">
+                <div class="tabbed-interface">
+                    <ul class="nav nav-tabs dashboard-tabstrip">
+                        <li class="{% active request profile_edit_url %}"><a href="{{ profile_edit_url }}">My Account</a></li>
+                        <li class="{% active request users_url %} {% active request user_create_url %}"><a href="{{ users_url }}">Users</a></li>
+                    </ul>
+                    <div class="main-content">
+                        <div class="tab-content well">
+                            {% block tab_content %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

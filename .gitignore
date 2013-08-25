@@ -1,0 +1,6 @@
+*.pyc
+local.py
+*.DS_Store
+*.tmp
+*.sqlite
+/uploads

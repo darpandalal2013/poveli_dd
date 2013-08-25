@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load pagination_tags %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <div class="page-header">
+                    <h1>Choose a Company:</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span7">
+                {% if clients %}
+                    <table class="table table-striped table-bordered" id="companies_table">
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in clients %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url dashboard_main client.id %}">{{ client.name }}</a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url products client.id %}">Products</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <h2>No companies.</h2>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer_scripts %}
+    <script>
+        $(function(){
+            $('#companies_table').dataTable({
+                "aoColumns": [
+                    { "sWidth": "50%" },
+                    {
+                        "sWidth": "50%",
+                        "bSortable": false,
+                        "bSearchable": false
+                    }
+                ],
+                "iDisplayLength": 50
+            });
+        });
+    </script>
+{% endblock %}

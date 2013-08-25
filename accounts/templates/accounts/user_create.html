@@ -1,0 +1,19 @@
+{% extends 'accounts/base_edit.html' %}
+
+{% load custom_tags %}
+
+{% block tab_content %}
+    <fieldset class="tab-pane active" id="tab_user_create">
+        <h2 class="title">Create New User</h2>
+        <hr>
+        <form class="rcol_form horizontal" action="" method="post">{% csrf_token %}
+            {% for field in form %}
+                {% render_form_field field %}
+            {% endfor %}
+            <div class="form-actions pull-right">
+                <a href="{% url users_list client.id %}" class="btn btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-save">Save</button>
+            </div>
+        </form>
+    </fieldset>
+{% endblock %}

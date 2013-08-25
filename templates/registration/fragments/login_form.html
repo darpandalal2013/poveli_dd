@@ -1,0 +1,15 @@
+{% load custom_tags %}
+
+<form class="form-stacked" method="post" action="{% url django.contrib.auth.views.login %}">
+    <fieldset>{% csrf_token %}
+        {% for field in form %}
+            {% render_form_field field %}
+        {% endfor %}
+        <input type="hidden" name="next" value="{{ next }}" />
+
+        <div class="form-actions left">
+            <button type="submit" class="btn btn-login">Login</button>
+        </div>
+    </fieldset>
+</form>
+<p><a href="{% url auth_password_reset %}">Forgot</a> your password?</p>

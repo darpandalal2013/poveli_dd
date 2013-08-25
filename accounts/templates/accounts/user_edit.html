@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load custom_tags %}
+
+{% block body %}
+    <h2>Edit account information</h2>
+    <form class="rcol_form" action="" method="post">{% csrf_token %}
+        {% for field in form %}
+            {% render_form_field field %}
+        {% endfor %}
+        <div class="form-actions">
+            <a href="{% url users_list client.uid %}" class="btn">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+{% endblock %}

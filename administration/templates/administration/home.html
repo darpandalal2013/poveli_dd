@@ -1,0 +1,19 @@
+{% extends 'administration/base.html' %}
+
+{% block sub_content %}
+	<div class="row">
+		<div class="span12">
+			<ul class="btn-list">
+				<li>
+					<a href="{% url admin:index %}" class="btn btn-extra-large btn-green"><span>Django</span><br>Admin</a>
+				</li>
+				<li>
+					<a class="btn btn-extra-large btn-pink" href="{% url administration_create_client %}"><span>Create</span><br>Client</a>
+				</li>
+				<li>
+					<a class="btn btn-extra-large btn-grey" href="{% url administration_clients_status %}"><span>Clients</span><br>Status</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+{% endblock %}

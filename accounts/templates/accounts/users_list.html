@@ -1,0 +1,69 @@
+{% extends 'accounts/base_edit.html' %}
+
+{% load custom_tags %}
+
+{% block tab_content %}
+    <div class="tab-pane active" id="tab_user_list">
+    	<h2 class="title full-width">Users List</h2>
+    	<hr>
+		<table id="campaigns_list" class="dashboard-list display table table-striped table-bordered">
+			<thead>
+				<tr>
+					<th class="col3">Email</th>
+					<th class="col1">First Name</th>
+					<th class="col2">Last Name</th>
+					<th class="col3">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for profile in profiles %}
+					<tr class="odd gradeA">
+						<td class="col3">
+							{{ profile.user.email }}
+						</td>
+						<td class="col1">
+							{{ profile.user.first_name }}
+						</td>
+						<td class="col2">
+							{{ profile.user.last_name }}
+						</td>
+						<td class="col5">
+							<a class="btn btn-blue delete" href="javascript:" onclick="delete_user('{% url user_delete client.id profile.id %}')">Delete</a>
+							{% if not profile.user.is_active %}
+							    <a class="action button-resent" href="javascript:" onclick="resend_email('{% url user_email_resend client.id profile.id %}')">Resend Email</a>
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		<br>
+		<p><a class="btn btn-large btn-orange pull-right" href="{% url user_create client.id %}">Create a New User</a></p>
+		<br>
+		<br>
+    </div>
+
+    <script>
+    	function delete_user(url) {
+    		if (confirm("Are you sure you want to delete this user?")) {
+    			$.post(url, {}, function(data) {
+    				if (data.success) {
+    					location.href = "{% url users_list client.id %}";
+    				} else {
+    					alert('Some error occurred.');
+    				}
+    			})
+    		}
+    	}
+    	function resend_email(url) {
+			$.post(url, {}, function(data) {
+				if (data.success) {
+					location.href = "{% url users_list client.id %}";
+				} else {
+					alert('Some error occurred.');
+				}
+			})
+    	}
+    </script>
+{% endblock %}
+
