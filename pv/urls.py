@@ -3,8 +3,6 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-from label.urls import api_urlpatterns
-
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'pv.views.home', name='home'),
@@ -21,6 +19,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^administration/', include('administration.urls')),
 
-    url(r'^label/', include('label.urls')),
+    url(r'^api/(?P<client_id>[\w\d-]+)/', include('label.api_urls')),
 
 )

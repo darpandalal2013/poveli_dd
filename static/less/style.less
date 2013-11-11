@@ -797,6 +797,7 @@ ul {
     background: #eee;
 
     #content {
+        position: relative;
         min-height: 500px;
         margin-top: 20px;
         padding-bottom: 20px;
@@ -808,7 +809,11 @@ ul {
         .container {
             width: auto;
         }
-
+        .updateLabelsBtn {
+            position: absolute;
+            top: 20px;
+            left: 150px;
+        }
         .mainBdy {
             border-bottom: 1px solid @pvTabGrey;
 
@@ -1330,27 +1335,32 @@ input[type=radio]:checked + .red-checkbox, input[type=checkbox]:checked + .green
         .status{
             width: 16px;
             height: 15px;
-            background: url(/static/global/img/status.png) no-repeat top center;
+            background: url(/static/global/img/status.png) no-repeat top left;
             display: inline-block;
             vertical-align: text-bottom;
             margin-top: 5px;
             
-            &.N{
+            &.NEW, &.PEN{
                 background-position: -48px 0;
             }
-            &.U{
+            &.UPD, &.QUE{
                 background-position: -16px 0;
             }
-            &.G{
+            &.PUB{
                 background-position: -32px 0;
             }
-            &.B{
+            &.FAI{
                 background-position: 0 0;
             }
         }
     }
     .editLink{
         float:right;
+    }
+    .status-QUE, .status-UPD{
+        .editLink{
+            visibility:hidden;
+        }
     }
     .editForm {
         display:none;

@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import login_required
 
 from common.decorators import client_access_required
 from client.models import Client
-from label.models import ProductListing, LabelTemplate, Label, LABEL_STATUS_UPDATING, LABEL_STATUS_NEW
+from label.models import ProductListing, LabelTemplate, Label, LABEL_STATUS_NEW, LABEL_STATUS_PUBLISHED, \
+    LABEL_STATUS_PENDING, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, LABEL_STATUS_FAILED
 from label.forms import ProductListingForm
 from product.models import Product
 
@@ -20,10 +21,11 @@ def product_redirector(client_id):
 @login_required
 @client_access_required
 def update_labels(request, client_id):
+    client = Client.objects.get(id=client_id)
+    Label.get_updates(client).update(status=LABEL_STATUS_QUEUED)
+    messages.success(request, "All pending updates are being sent to labels.")
 
-    params = {}
-
-    return render(request, 'update_labels', params)
+    return product_redirector(client_id)
     
 @login_required
 @client_access_required
@@ -32,7 +34,7 @@ def product_list(request, client_id):
 
     if request.method == 'POST':
         label = Label.objects.get(id=request.POST['label_id'])
-        if label.is_updated():
+        if label.is_updating():
             messages.error(request, "Cannot update label at this time. Label currently being updated. Please try again later.")
         else:
             product_listing = ProductListing.objects.get(id=request.POST['product_listing_id'])
@@ -44,12 +46,25 @@ def product_list(request, client_id):
                 messages.success(request, "Label deleted.")
             
             elif form.is_valid():
+                new_status = LABEL_STATUS_QUEUED if request.REQUEST['action'] != 'Save' else LABEL_STATUS_PENDING
+                
                 form.save()
-            
-                label_template = LabelTemplate.objects.get(id=form.cleaned_data['template_choices'])
-                label.template = label_template
-                label.save()
-            
+                
+                for field in form.changed_data:
+                    if not hasattr(product_listing, field):
+                        print "removing", field
+                        form.changed_data.remove(field)
+
+                if form.cleaned_data['template_choices'] != label.template.id:
+                    label.template = LabelTemplate.objects.get(id=form.cleaned_data['template_choices'])
+                    label.status = new_status
+                    label.save()
+
+                if form.has_changed():
+                    for l in label.product_listing.labels.all_active():
+                        l.status = new_status
+                        l.save()
+                        
                 messages.success(request, "Changes Saved.")
             
             else:
@@ -70,12 +85,15 @@ def product_list(request, client_id):
         product_listing.title = product_listing.title or product_listing.product.title
         product_listing.description = product_listing.description or product_listing.product.description
         label.form = ProductListingForm(label, instance=label.product_listing)
-        if label.is_updated():
-            label.status = LABEL_STATUS_UPDATING
+        #if label.is_updated():
+        #    label.status = LABEL_STATUS_UPDATING
 
+    has_updates = Label.get_updates(client).count()>0
+    
     params = {
         'client': client,
         'labels': labels,
+        'has_updates': has_updates
     }
 
     return render(request, 'product_list.html', params)

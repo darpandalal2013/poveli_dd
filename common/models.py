@@ -35,7 +35,47 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
+    def _trim_char_field(self, field_name):
+        setattr(self, field_name, getattr(self, field_name, '')[:self._meta.get_field_by_name(field_name)[0].max_length])
+
     ### Managers
     #objects = models.Manager()
     objects = ActiveObjectsManager()
     active_objects = ActiveObjectsFilterManager()
+
+class DBNow(object):
+    """
+    DBNow offers a way to update or query by the database timestamp.
+
+        drafts = DraftVideo.objects.filter(created_on__gt=DBNow())
+
+        or:
+
+        draft.created_on = DBNow()
+        draft.save()
+    """
+    def __str__(self):
+        return 'DATABASE NOW()'
+    def as_sql(self, qn, val):
+        return 'NOW()', {}
+    @classmethod
+    def patch(cls, field):
+        orig_prep_db = field.get_db_prep_value
+        orig_prep_lookup = field.get_prep_lookup
+        orig_db_prep_lookup = field.get_db_prep_lookup
+
+        def prep_db_value(self, value, connection, prepared=False):
+            return value if isinstance(value, cls) else orig_prep_db(self, value, connection, prepared)
+
+        def prep_lookup(self, lookup_type, value):
+            return value if isinstance(value, cls) else orig_prep_lookup(self, lookup_type, value)
+
+        def prep_db_lookup(self, lookup_type, value, connection, prepared=True):
+            return value if isinstance(value, cls) else orig_db_prep_lookup(self, lookup_type, value, connection=connection, prepared=True)
+
+        field.get_db_prep_value = prep_db_value
+        field.get_prep_lookup = prep_lookup
+        field.get_db_prep_lookup = prep_db_lookup
+
+# DBNow Activator
+DBNow.patch(models.DateTimeField)
