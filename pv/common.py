@@ -13,6 +13,9 @@ PROJECT_ROOT = os.path.abspath(os.path.split(os.path.split(__file__)[0])[0])
 
 MANAGERS = ADMINS
 
+DASHBOARD_DOMAIN = 'http://local:8001'
+API_DOMAIN = 'http://local:8001'
+
 DATABASES = {
     'default2': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.

@@ -2,6 +2,7 @@ from django.db import models
 from django.template import Context, Template
 
 from common.models import BaseModel
+from common.fields import UUID4Field
 
 class Client(BaseModel):
     """
@@ -24,6 +25,10 @@ class Client(BaseModel):
     logo = models.ImageField(max_length=255, upload_to='client/logos/', blank=True, null=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
     client_type = models.CharField(max_length=1, choices=TYPES, db_index=True)
+    
+    UID_MAX_LENGTH = 42
+    secret_key = UUID4Field(auto=True, max_length=UID_MAX_LENGTH, unique=True,
+                     transform_value=lambda ioc, v: v)
 
     class Meta:
         db_table = u'client'

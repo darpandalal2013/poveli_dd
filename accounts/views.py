@@ -27,6 +27,7 @@ from accounts.const import MSG_SUCCESS_USERPROFILE_EDITED, MSG_SUCCESS_USER_CREA
 
 from client.models import Client
 
+import settings
 
 @login_required
 @client_access_required
@@ -220,4 +221,5 @@ def profile_edit(request, client_id, template='accounts/profile_edit.html'):
 
     params['form'] = form
     params['client'] = client
+    params['settings'] = settings
     return render(request, template, params)

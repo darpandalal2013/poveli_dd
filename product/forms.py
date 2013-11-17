@@ -1,5 +1,6 @@
 from django import forms
 
+from product.models import ProductListing
 from label.models import ProductListing, LabelTemplate, Label, LABEL_SIZES
 
 class ProductListingForm(forms.ModelForm):

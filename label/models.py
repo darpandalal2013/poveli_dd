@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Q, F
 
 from common.models import BaseModel
-from product.models import Product
+from product.models import Product, ProductListing
 from common.util import ucwords
 from client.models import Client
 import settings
@@ -53,9 +53,6 @@ LABEL_STATUSES = (
     (LABEL_STATUS_FAILED, 'Failed'),
 )
 
-_UNIT_TYPES = ('ct', 'each', 'lt', 'liter', 'pound', 'quart')
-UNIT_TYPES = ([ (x, x) for x in _UNIT_TYPES ])
-
 LISTING_STATUS_PENDING = 'PEN'
 LISTING_STATUS_PUBLISHED = 'PUB'
 LISTING_STATUS_FAILED = 'FAI'
@@ -101,9 +98,14 @@ class LabelTemplate(BaseModel):
     @staticmethod
     def get_or_create_def_template(client, size, category = None):
         kwargs = {} if not category else {'category': category}
-        templates = LabelTemplate.objects.filter(client=client, size=size, **kwargs)
+        templates = LabelTemplate.objects.filter(client=client, size=size)
         
         if templates:
+            if category:
+                for template in templates:
+                    if template.category == category:
+                        return template
+                        
             return templates[0]
             
         template = LabelTemplate(client=client, size=size)
@@ -128,48 +130,13 @@ class LabelTemplate(BaseModel):
             template.retail_pos = '135x115'
             template.retail_font_size = '44'
 
+        if category:
+            template.title = "%s (%s)" % (template.title, category)
+            template.category = category
+            
         template.save()
         
         return template
-
-        
-class ProductListing(BaseModel):
-    client = models.ForeignKey(Client, related_name='product_listings')
-
-    product = models.ForeignKey(Product, blank=False)
-    multipack_code = models.CharField(max_length=10, blank=True, default='')
-    unit = models.CharField(max_length=20, choices=UNIT_TYPES, default='', blank=True)
-    
-    image = models.ImageField(upload_to='product_listing', blank=True)
-    title = models.CharField(max_length=256, blank=True)
-    description = models.CharField(max_length=512, blank=True)
-    retail = models.DecimalField(max_digits=10, decimal_places=2, blank=False, default=0.00)
-    
-    #status = models.CharField(choices=LISTING_STATUSES, default=LISTING_STATUS_PENDING, blank=False, null=False)
-
-    updated_on = models.DateTimeField(default=datetime.now, auto_now=True, null=False, blank=False)
-
-    def __unicode__(self):
-        return "%s ($%s)" % (self.title or self.product.title, self.retail)
-
-    class Meta:
-        db_table = u'product_listing'
-        unique_together = (("client", "product", "multipack_code", "unit"),)
-        
-    def save(self, *args, **kwargs):
-        for field in ['title', 'description']:
-            self._trim_char_field(field)
-        return super(ProductListing, self).save(*args, **kwargs) # call to the real save()
-
-    @property
-    def title_disp(self):
-        return self.title or self.product.title
-
-    def description_disp(self):
-        return self.description or self.product.description
-        
-    def thumb(self):
-        return self.image or self.product.image or self.product.image_external
     
 class Label(BaseModel):
     client = models.ForeignKey(Client, related_name='labels')
@@ -204,24 +171,24 @@ class Label(BaseModel):
 
     @staticmethod
     def get_updates(clients):
-        return clients.labels.filter(Q(active=True), \
+        return clients.labels.filter(Q(active=True),
             Q(status=LABEL_STATUS_PENDING) 
             | (Q(status=LABEL_STATUS_NEW) & Q(product_listing__retail__gt=0))
-            | (Q(template__updated_on__gt=F('sent_on')) & Q(product_listing__retail__gt=0)))
+            # because the updated_on is django tz and sent_on is db tz, this won't work correctly... disabling for now.
+            #| (Q(template__updated_on__gt=F('sent_on')) & Q(product_listing__retail__gt=0))
+            )
         
     @staticmethod
     def get_label_size_by_upc(upc):
         return len(upc)==4 and LABEL_SIG.get(upc[:2],None)
         
     @staticmethod
-    def add_label(client, upc, product, category=None):
-        product_listing, created = ProductListing.objects.get_or_create(client=client, product=product)
-
+    def add_label(client, upc, product_listing, status=None):
         size = Label.get_label_size_by_upc(upc)
         if not size:
             raise Exception("Invalid Label UPC!")
             
-        label_template = LabelTemplate.get_or_create_def_template(client, size, category)
+        label_template = LabelTemplate.get_or_create_def_template(client, size, product_listing.category)
         
         labels = Label.objects.filter(upc=upc, client=client)
         if labels:
@@ -234,13 +201,11 @@ class Label(BaseModel):
         label.size = size
         label.active = True
         
+        if status:
+            label.status = status
+        
         label.save()
         
         return label
         
-#class LabelUpdateQueue(BaseModel):
-#    label = models.ForeignKey(Label, related_name='queue')
-#    submitted_on = models.DateTimeField(null=False, blank=False, default=datetime.now)
-#    status = models.CharField(choices=QUEUE_STATUSES, default=QUEUE_STATUS_PENDING, null=False, blank=False)
-    
     

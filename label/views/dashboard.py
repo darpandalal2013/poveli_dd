@@ -7,13 +7,14 @@ from django.core.urlresolvers import reverse
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q, F
 
 from common.decorators import client_access_required
 from client.models import Client
-from label.models import ProductListing, LabelTemplate, Label, LABEL_STATUS_NEW, LABEL_STATUS_PUBLISHED, \
+from label.models import LabelTemplate, Label, LABEL_STATUS_NEW, LABEL_STATUS_PUBLISHED, \
     LABEL_STATUS_PENDING, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, LABEL_STATUS_FAILED
-from label.forms import ProductListingForm
-from product.models import Product
+from product.forms import ProductListingForm
+from product.models import Product, ProductListing
 
 def product_redirector(client_id):
     return redirect(reverse('products', kwargs={'client_id': client_id}))
@@ -22,7 +23,7 @@ def product_redirector(client_id):
 @client_access_required
 def update_labels(request, client_id):
     client = Client.objects.get(id=client_id)
-    Label.get_updates(client).update(status=LABEL_STATUS_QUEUED)
+    Label.get_updates(client).update(status=LABEL_STATUS_QUEUED, fail_count=0)
     messages.success(request, "All pending updates are being sent to labels.")
 
     return product_redirector(client_id)
@@ -58,11 +59,13 @@ def product_list(request, client_id):
                 if form.cleaned_data['template_choices'] != label.template.id:
                     label.template = LabelTemplate.objects.get(id=form.cleaned_data['template_choices'])
                     label.status = new_status
+                    label.fail_count = 0
                     label.save()
 
                 if form.has_changed():
                     for l in label.product_listing.labels.all_active():
                         l.status = new_status
+                        label.fail_count = 0
                         l.save()
                         
                 messages.success(request, "Changes Saved.")
@@ -78,7 +81,14 @@ def product_list(request, client_id):
             
             return product_redirector(client.id)
             
-    labels = client.labels.all_active().order_by('product_listing__title', 'product_listing__product__title')[:50]
+    labels = client.labels.all_active().order_by('product_listing__title', 'product_listing__product__title')
+    
+    q = request.REQUEST.get('q',None)
+    if q:
+        labels = labels.filter(Q(upc__contains=q) | Q(product_listing__product__upc__contains=q) 
+            | Q(product_listing__title__icontains=q) | Q(product_listing__description__icontains=q))
+        
+    labels = labels[:50]
     
     for label in labels:
         product_listing = label.product_listing
@@ -118,10 +128,10 @@ def add_labels(request, client_id):
                     
             for barcode in barcodes.values():
                 if barcode.has_key('p'):
-                    product = Product.add_product_by_upc(barcode['p'])
-                
+                    product_listing, dirty = ProductListing.add_or_update(client, barcode['p'])
+                    
                     if barcode.has_key('l'):
-                        label = Label.add_label(client, barcode['l'], product)
+                        label = Label.add_label(client, barcode['l'], product_listing)
         
             messages.success(request, "Products and labels added.")
             return product_redirector(client.id)

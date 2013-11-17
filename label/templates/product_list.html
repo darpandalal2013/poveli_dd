@@ -22,6 +22,10 @@
         <a class='btn btn-create updateLabelsBtn' href='{% url update_labels client.id %}'>Update Pending Labels</a>
     {% endif %}
     
+    <div class="searchBox">
+        <form><input class="input" placeholder="search keyword or barcode" name="q"><input class="btn btn-create" type="submit"></form>
+    </div>
+        
     <div class="dataTable">
     <div class="row tableHeader hide">
         <div class="span5 offset1">
@@ -38,10 +42,11 @@
             </div>
         </div>
     </div>
+    {% if not labels %} No products found {% endif %}
     {% for label in labels %}
         <div id="{{ label.upc }}" class="row {% cycle 'odd' 'even' %} product status-{{ label.status }}">
             <div class="span2 offset">
-                <a class="imgEditLink labelPreview" href="#editForm_{{label.upc}}"><img class="thumb" src="{% url get_bitmap client.id label.upc %}"></a>
+                <a class="imgEditLink labelPreview" href="#editForm_{{label.upc}}"><img class="thumb" src="{% url get_bitmap client.secret_key '0' label.upc %}"></a>
                 <div class="productUpc"><div class="status {{ label.status }}"></div> [ {{ label.upc }} ]</div>
                 </div>
 
@@ -79,7 +84,7 @@
                         <div class="labels">
                             {% for other_labels in label.product_listing.labels.all_active %}
                                 <div class="row">
-                                    <img class="thumb" src="{% url get_bitmap client.id other_labels.upc %}"><br>
+                                    <img class="thumb" src="{% url get_bitmap client.secret_key '0' other_labels.upc %}"><br>
                                     [ {{ other_labels.template.title }} ]
                                 </div>
                             {% endfor %}
