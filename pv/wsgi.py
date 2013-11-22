@@ -23,13 +23,18 @@ sys.path.append(os.path.dirname(project))
 sys.path.insert(0, '/home/ubuntu/webapps/pv/lib/python2.7/site-packages')
 
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pv.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+_application = get_wsgi_application()
+
+def application(environ, start_response):
+  os.environ['ENV'] = environ.get('ENV')
+  return _application(environ, start_response)
+
 
 # Apply WSGI middleware here.
 # from helloworld.wsgi import HelloWorldApplication
