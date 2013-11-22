@@ -1468,6 +1468,10 @@ input[type=radio]:checked + .red-checkbox, input[type=checkbox]:checked + .green
         padding: 4px 40px 4px 15px;
         border: 2px solid @pvBlue;
         border-radius: 5px;
+        
+        &:not([value=""]){
+            background: yellow
+        }
     }
     .btn {
         border-radius: 20px;

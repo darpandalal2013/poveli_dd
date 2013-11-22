@@ -103,7 +103,8 @@ def product_list(request, client_id):
     params = {
         'client': client,
         'labels': labels,
-        'has_updates': has_updates
+        'has_updates': has_updates,
+        'search_term': q or '',
     }
 
     return render(request, 'product_list.html', params)

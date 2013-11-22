@@ -24,7 +24,7 @@
     {% endif %}
     
     <div class="searchBox">
-        <form><input class="input" placeholder="search keyword or barcode" name="q"><input class="btn btn-create" type="submit" value="&gt;"></form>
+        <form><input class="input" placeholder="search keyword or barcode" name="q" value="{{ search_term }}"><input class="btn btn-create" type="submit" value="&gt;"></form>
     </div>
         
     <div class="dataTable">
@@ -37,6 +37,8 @@
 
     <script>
     $(function(){
+        $(".searchBox .input").focus();
+        
         $(".imgEditLink, .editLink").click(function(e){
             var $status = $(this).closest(".product").find(".status"); 
             if ($status.hasClass('U')){
