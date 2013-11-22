@@ -17,7 +17,7 @@ DASHBOARD_DOMAIN = 'http://local:8001'
 API_DOMAIN = 'http://local:8001'
 
 DATABASES = {
-    'default2': {
+    'default-sqllite': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'pvdb.sqlite',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
@@ -196,3 +196,4 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 PV_AM_EMAIL = 'support@povelli.com'
 
 ACCOUNT_ACTIVATION_DAYS = 15
+

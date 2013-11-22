@@ -1,0 +1,76 @@
+<div class="row tableHeader hide">
+    <div class="span5 offset1">
+        <div class="productHeader">
+            <div class="span2">Preview</div>
+            <div class="span2">Product</div>
+        </div>
+    </div>
+
+    <div class="span5 offset1">
+        <div class="productHeader">
+            <div class="span2">Preview</div>
+            <div class="span2">Product</div>
+        </div>
+    </div>
+</div>
+{% if not labels %} No products found {% endif %}
+{% for label in labels %}
+    <div id="{{ label.upc }}" class="row {% cycle 'odd' 'even' %} product status-{{ label.status }}">
+        <div class="span2 offset">
+            <a class="imgEditLink labelPreview" href="#editForm_{{label.upc}}"><img class="thumb" src="{% url get_bitmap client.secret_key '0' label.upc %}"></a>
+            <div class="productUpc"><div class="status {{ label.status }}"></div> [ {{ label.upc }} ]</div>
+            </div>
+
+        <div class="span3">
+            Status: {{ label.get_status_display }}
+            <div class="productTitle">{{ label.product_listing.title_disp|default:"Click Edit to Add..."}}</div>
+            <div class="productDesc">{{ label.product_listing.description_disp}}</div>
+            <div class="productUpc">[ {{ label.product_listing.product.upc }} ]</div>
+            <div class="productUnit">{{ label.product_listing.multipack_code }} {{ label.product_listing.get_unit_display }}</div>
+            <div class="numeric">${{ label.product_listing.retail|floatformat:"2" }}</div>
+            </div>
+
+        <div class="span1 productImage">
+            <div class="btn-mini"><a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a></div>
+            <a class="imgEditLink" href="#editForm_{{label.upc}}"><img class="thumb" src="{{ label.product_listing.thumb }}"></a>
+            </div>
+
+        <div id="editForm_{{label.upc}}" class="editForm">
+            <div class="labelUpc">[ {{ label.upc }} ]</div>
+            <form action="" method="post">{% csrf_token %}
+                <div class="row">
+                <div class="span4">
+                    <input type="hidden" name="label_id" value="{{ label.id }}">
+                    <input type="hidden" name="product_listing_id" value="{{ label.product_listing.id }}">
+                    <input type="hidden" name="delete_label" value="">
+                
+                    {{ label.form }}
+                </div>
+                <div class="span2 thumbs">
+                    {% if label.product_listing.thumb %}
+                    <div class="row productImage">
+                        <img class="thumb" src="{{ label.product_listing.thumb }}">
+                    </div>
+                    {% endif %}
+                    <div class="labels">
+                        {% for other_labels in label.product_listing.labels.all_active %}
+                            <div class="row">
+                                <img class="thumb" src="{% url get_bitmap client.secret_key '0' other_labels.upc %}"><br>
+                                [ {{ other_labels.template.title }} ]
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                </div>
+                <div class="row">
+                <div class="form-actions form-actions pull-right">
+                    <a href="javscript:" class="btn btn-cancel modal_close">Cancel</a>
+                    <input class="btn btn-cancel btn-delete" type="button" value="Delete" />
+                    <input class="btn btn-create" type="submit" name='action' value="Save" />
+                    <input class="btn btn-create" type="submit" name='action' value="Save &amp; Apply" />
+                </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endfor %}

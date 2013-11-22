@@ -1,0 +1,85 @@
+<table class="tableView">
+    <thead>
+        <tr>
+            <th>Shelf Label ID</th>
+            <th>Product/Description</th>
+            <th>Product Category</th>
+            <th>UPC</th>
+            <th>Retail Price</th>
+            <th>Qty./Unit</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% if not labels %} <tr><td colspan="6">No products found</td></tr> {% endif %}
+        {% for label in labels %}
+            <tr id="{{ label.upc }}" class="product {% cycle 'odd' 'even' %} status-{{ label.status }}">
+                <td class="productUpc"><div class="status {{ label.status }}" title="{{ label.get_status_display }}"></div> {{ label.upc }}</td>
+                
+                <td><span class="producTitle">{{ label.product_listing.title_disp|default:"Click Edit to Add..." }}</span>
+                    {% if label.product_listing.description_disp %}
+                        <span class="productDesc">{{ label.product_listing.description_disp }}</span>
+                    {% endif %}
+                    </td>
+                
+                <td>{{ label.product_listing.category|default:""}}</td>
+
+                <td class="productUpc">{{ label.product_listing.product.upc|default:""}}</td>
+
+                <td>${{ label.product_listing.retail|floatformat:"2"}}</td>
+
+                <td>{{ label.product_listing.multipack_code|default:""}} {{ label.product_listing.get_unit_display }}</td>
+                
+                <td><div class="btn-mini">
+                    <a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a></div>
+                    
+                    <div id="editForm_{{label.upc}}" class="editForm">
+                        <div class="labelUpc">[ {{ label.upc }} ]</div>
+                        <form action="" method="post">{% csrf_token %}
+                            <div class="row">
+                            <div class="span4">
+                                <input type="hidden" name="label_id" value="{{ label.id }}">
+                                <input type="hidden" name="product_listing_id" value="{{ label.product_listing.id }}">
+                                <input type="hidden" name="delete_label" value="">
+
+                                <table>
+                                    {{ label.form }}
+                                </table>
+                                
+                            </div>
+                            <div class="span2 thumbs">
+                                {% if label.product_listing.thumb %}
+                                <div class="row productImage">
+                                    <img class="thumb" src="{{ label.product_listing.thumb }}">
+                                </div>
+                                {% endif %}
+                                <div class="labels">
+                                    {% for other_labels in label.product_listing.labels.all_active %}
+                                        <div class="row">
+                                            <img class="thumb" src="{% url get_bitmap client.secret_key '0' other_labels.upc %}"><br>
+                                            [ {{ other_labels.template.title }} ]
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            </div>
+                            <div class="row">
+                            <div class="form-actions form-actions pull-right">
+                                <a href="javscript:" class="btn btn-cancel modal_close">Cancel</a>
+                                <input class="btn btn-cancel btn-delete" type="button" value="Delete" />
+                                <input class="btn btn-create" type="submit" name='action' value="Save" />
+                                <input class="btn btn-create" type="submit" name='action' value="Save &amp; Apply" />
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    </td>
+            </tr>
+        {% endfor %}
+
+
+
+    </tbody>
+</table>

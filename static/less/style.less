@@ -20,8 +20,8 @@
 // Color Variables
 @pvBlack: #191919;              // Logo Black
 @pvBlackDark: #000000;          // Logo Black Dark Border
-@pvBlue: #00afab;               // Logo Blue
-@pvBlueDark: #009995;           // Logo Blue Dark Border
+@pvBlue: #117FBB;               // Logo Blue
+@pvBlueDark: #015F99;           // Logo Blue Dark Border
 @pvMag: #ed1165;                // Logo Magenta
 @pvMagDark: #bd1851;            // Logo Magenta Dark Border
 
@@ -173,6 +173,7 @@
     font-weight: normal;
 
     &:hover {
+        color: @color;
         background-color: @hBgColor;
     }
 }
@@ -281,6 +282,7 @@ ul {
 */
 
 .alert {
+    margin-top: 20px;
     .fs(16);
 }
 .create h2 {
@@ -1275,6 +1277,7 @@ input[type=radio]:checked + .red-checkbox, input[type=checkbox]:checked + .green
 
 .dataTable {
     line-height: 18px;
+    margin-top: 20px;
     
     .tableHeader {
         font-weight: bold;
@@ -1289,7 +1292,7 @@ input[type=radio]:checked + .red-checkbox, input[type=checkbox]:checked + .green
     .productHeader{
     }
     
-    .product{
+    div.product{
         display: inline-block;
         vertical-align: top;
         margin: 0px 0px 15px 20px;
@@ -1418,6 +1421,28 @@ input[type=radio]:checked + .red-checkbox, input[type=checkbox]:checked + .green
             }
         }
     }
+    
+    .tableView{
+        width: 100%;
+        tr{
+            border-bottom: 1px solid #eee;
+        }
+        thead tr{
+            border: 1px solid #ccc;
+            .pvgrad();
+        }
+        td, th{
+            text-align: left;
+            padding: 5px 4px;
+        }
+        
+        .producTitle{
+            font-weight: bold;
+        }
+        .productDesc{
+            display: block;
+        }
+    }
 }
 
 .barcodes {
@@ -1440,9 +1465,12 @@ input[type=radio]:checked + .red-checkbox, input[type=checkbox]:checked + .green
     .input {
         width: 300px;
         font-size: 20px;
-        padding: 4px 15px;
-        margin-right: 10px;
-        border: 1px solid #ccc;
+        padding: 4px 40px 4px 15px;
+        border: 2px solid @pvBlue;
+        border-radius: 5px;
+    }
+    .btn {
         border-radius: 20px;
+        margin-left: -40px;
     }
 }
