@@ -1,3 +1,5 @@
+DASHBOARD_DOMAIN = 'http://devdashboard.povelli.com'
+API_DOMAIN = 'http://devapp.povelli.com'
 
 DATABASES = {
     'default': {

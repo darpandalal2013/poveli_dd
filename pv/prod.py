@@ -1,3 +1,6 @@
+DASHBOARD_DOMAIN = 'http://dashboard.povelli.com'
+API_DOMAIN = 'http://app.povelli.com'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
