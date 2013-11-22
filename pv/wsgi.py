@@ -13,7 +13,15 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os
+import os, sys, site
+
+project = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(project)
+sys.path.append(os.path.dirname(project))
+
+# to get correct site-packages on the path
+sys.path.insert(0, '/home/ubuntu/webapps/pv/lib/python2.7/site-packages')
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "pv.settings")
 
