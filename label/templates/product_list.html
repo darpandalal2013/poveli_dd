@@ -21,7 +21,8 @@
     <div class="topButtons">
         <span class="title">Show: </span>
         <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>All</a>
-        <a class='btn btn-cancel btn-status new {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>New</a>
+        <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>New</a>
+        <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending</a>
         <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed</a>
         
         {% if has_updates %}
