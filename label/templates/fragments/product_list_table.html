@@ -57,7 +57,7 @@
                                 <div class="labels">
                                     {% for other_labels in label.product_listing.labels.all_active %}
                                         <div class="row">
-                                            <img class="thumb" src="{% url get_bitmap client.secret_key '0' other_labels.upc %}"><br>
+                                            <img class="thumb" src="{% url get_bitmap client.client_key '0' other_labels.upc %}"><br>
                                             [ {{ other_labels.template.title }} ]
                                         </div>
                                     {% endfor %}

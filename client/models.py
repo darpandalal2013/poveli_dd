@@ -27,9 +27,9 @@ class Client(BaseModel):
     client_type = models.CharField(max_length=1, choices=TYPES, db_index=True)
     
     UID_MAX_LENGTH = 42
-    secret_key = UUID4Field(auto=True, max_length=UID_MAX_LENGTH, unique=True,
+    client_key = UUID4Field(auto=True, max_length=UID_MAX_LENGTH, unique=True, blank=False,
                      transform_value=lambda ioc, v: v)
-
+                     
     class Meta:
         db_table = u'client'
         ordering = ('name', )

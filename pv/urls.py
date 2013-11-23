@@ -19,6 +19,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^administration/', include('administration.urls')),
 
-    url(r'^api/(?P<client_secret>[\w\d_-]+)/', include('label.api_urls')),
+    url(r'^api/(?P<client_key>[\w\d_-]+)/', include('label.api_urls')),
 
 )

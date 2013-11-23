@@ -18,5 +18,5 @@
         <br><br>
     </fieldset>
     <h2>Pricebook Upload Address</h2>
-        {{ settings.API_DOMAIN }}{% url pricebook_upload client.secret_key %}
+        {{ settings.API_DOMAIN }}{% url pricebook_upload client.client_key %}
 {% endblock %}

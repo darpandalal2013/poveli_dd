@@ -15,21 +15,21 @@ from label.models import Label, LABEL_STATUS_NEW, LABEL_STATUS_PUBLISHED, \
 import settings
 
 @csrf_exempt
-def get_label_status(request, client_secret):
+def get_label_status(request, client_key):
     upcs = request.REQUEST.get('upcs', '').split(',')
     
     upcs = [x.strip() for x in upcs if x.strip()]
     
     status = dict((x.upc, x.status) 
-                    for x in Label.objects.filter(client__secret_key=client_secret, upc__in=upcs, active=True))
+                    for x in Label.objects.filter(client__client_key=client_key, upc__in=upcs, active=True))
     
     return JsonResponse(success=True, data={'status': status})
     
-def get_updates(request, client_secret, host_id):
-    timeout = 30
-    long_timeout = 100
+def get_updates(request, client_key, host_id):
+    timeout = 60
+    long_timeout = 300
     
-    filters = {'active': True, 'client__secret_key': client_secret}
+    filters = {'active': True, 'client__client_key': client_key}
     
     # pick an update based on either of the following rules:
     #   - no successfull host and status is queued or idle pending 
@@ -64,9 +64,9 @@ def get_updates(request, client_secret, host_id):
     #return JsonResponse(success=True, data={'labels': labels})
     return HttpResponse(label.upc if label else '')
 
-def update_ack(request, client_secret, host_id, label_upc):
+def update_ack(request, client_key, host_id, label_upc):
     try: 
-        label = Label.objects.get(client__secret_key=client_secret, upc=label_upc)
+        label = Label.objects.get(client__client_key=client_key, upc=label_upc)
 
         status = 0
         try:
@@ -81,7 +81,13 @@ def update_ack(request, client_secret, host_id, label_upc):
         #   If succeeds, and no label.host or the signal strength is greater, set label.host = host
     
         if status == 1:
-            label.status = LABEL_STATUS_PUBLISHED
+            # Change the status to published only if we started updating after product was queued.
+            # This won't be true if we receive an update command while we are in the process of updating.
+            if label.sent_on > label.queued_on:
+                label.status = LABEL_STATUS_PUBLISHED
+            else:
+                label.status = LABEL_STATUS_QUEUED
+                
             label.successfull_host = host_id
             label.fail_count = 0
             label.save()
@@ -110,10 +116,10 @@ def get_font(font_name, font_size):
         return font
     return None
 
-def get_bitmap(request, client_secret, host_id, label_upc):
+def get_bitmap(request, client_key, host_id, label_upc):
     response = HttpResponse(mimetype="image/bmp")
 
-    label = Label.objects.get(client__secret_key=client_secret, upc=label_upc)
+    label = Label.objects.get(client__client_key=client_key, upc=label_upc)
     template = label.template
     product_listing = label.product_listing
     product = product_listing.product
@@ -146,13 +152,13 @@ def get_bitmap(request, client_secret, host_id, label_upc):
     return response
 
 @csrf_exempt
-def pricebook_upload(request, client_secret):
+def pricebook_upload(request, client_key):
     error = None
     pricebook = None
     
     try:
         try:
-            client = Client.objects.get(secret_key=client_secret)
+            client = Client.objects.get(client_key=client_key)
         except Exception as e:
             raise Exception ('Invalid client! [%s]' % str(e))
         

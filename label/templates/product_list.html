@@ -18,10 +18,17 @@
 
 {% block body %}
     
-    {% if has_updates %}
-        <a class='btn btn-create updateLabelsBtn' href='{% url update_labels client.id %}' 
-            onclick'return confirm("Are you sure you like to push all the pending edits to the labels?")'>Update Pending Labels</a>
-    {% endif %}
+    <div class="topButtons">
+        <span class="title">Show: </span>
+        <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>All</a>
+        <a class='btn btn-cancel btn-status new {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>New</a>
+        <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed</a>
+        
+        {% if has_updates %}
+            <a class='btn btn-create update' href='{% url update_labels client.id %}' 
+                onclick'return confirm("Are you sure you like to push all the pending edits to the labels?")'>Update Pending Labels</a>
+        {% endif %}
+    </div>
     
     <div class="searchBox">
         <form><input class="input" placeholder="search keyword or barcode" name="q" value="{{ search_term }}"><input class="btn btn-create" type="submit" value="&gt;"></form>
@@ -35,6 +42,22 @@
         {% endif %}
     </div>
 
+    <div class="pagination">
+        <span class="step-links">
+            {% if labels.has_previous %}
+                <a href="?page={{ labels.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ labels.number }} / {{ labels.paginator.num_pages }}
+            </span>
+
+            {% if labels.has_next %}
+                <a href="?page={{ labels.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    
     <script>
     $(function(){
         $(".searchBox .input").focus();
@@ -73,7 +96,7 @@
             upcs = [];
             $(".product").each(function(){upcs.push(this.id)});
             $.ajax({
-                url: '{% url get_label_status client.secret_key %}',
+                url: '{% url get_label_status client.client_key %}',
                 data: {upcs: upcs.join(',')},
                 cache: false,
                 dataType: 'json',

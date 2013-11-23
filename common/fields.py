@@ -32,9 +32,9 @@ class UUID4Field(CharField):
                     kwargs['max_length'] = _UUID_LEN
                 elif kwargs['max_length'] < _UUID_LEN:
                     raise ValueError('"max_length" argument can not be less than %d.' % _UUID_LEN)
-            kwargs['blank'] = False
+            #kwargs['blank'] = False
             kwargs['editable'] = False
-            kwargs['unique'] = True
+            #kwargs['unique'] = True
             kwargs['db_index'] = True
 
         self._auto = auto

@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db import models
 from django.db.models import Q, F
 
-from common.models import BaseModel
+from common.models import BaseModel, DBNow
 from product.models import Product, ProductListing
 from common.util import ucwords
 from client.models import Client
@@ -150,6 +150,7 @@ class Label(BaseModel):
     updated_on = models.DateTimeField(default=datetime.now, auto_now=True, null=False, blank=False)
 
     # Label Update Tracking...
+    queued_on = models.DateTimeField(null=True, blank=True)
     sent_on = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices = LABEL_STATUSES, default=LABEL_STATUS_NEW, null=False, blank=False)
     fail_count = models.IntegerField(default=0, null=False, blank=False)
@@ -169,6 +170,17 @@ class Label(BaseModel):
     def is_updating(self):
         return self.status in [LABEL_STATUS_UPDATING, LABEL_STATUS_QUEUED]
 
+    def set_status(self, new_status):
+        # if currently in updating state, then dont allow changing status
+        if self.status != LABEL_STATUS_UPDATING:
+            self.status = new_status
+        
+        # if we are trying to queue the label, set the queue time and fail count regardless
+        if new_status == LABEL_STATUS_QUEUED:
+            self.fail_count = 0
+            self.queued_on = DBNow()
+            
+            
     @staticmethod
     def get_updates(clients):
         return clients.labels.filter(Q(active=True),
@@ -202,8 +214,7 @@ class Label(BaseModel):
         label.active = True
         
         if status:
-            label.status = status
-            label.fail_count = 0
+            label.set_status(status)
         
         label.save()
         
