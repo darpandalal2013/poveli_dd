@@ -150,7 +150,7 @@ class Label(BaseModel):
     updated_on = models.DateTimeField(default=datetime.now, auto_now=True, null=False, blank=False)
 
     # Label Update Tracking...
-    queued_on = models.DateTimeField(null=True, blank=True)
+    queued_on = models.DateTimeField(default=datetime.now, null=True, blank=True)
     sent_on = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=10, choices = LABEL_STATUSES, default=LABEL_STATUS_NEW, null=False, blank=False)
     fail_count = models.IntegerField(default=0, null=False, blank=False)
