@@ -38,6 +38,7 @@ def get_updates(request, client_secret, host_id):
     #   - status is failed and the host is not the previously successfull host
     labels = Label.objects.select_for_update().filter(**filters).extra(
         select={
+            'has_host': 'case when coalesce(successfull_host,\'\') = \'\' then 0 else 1 end',
             'timer': 'TIMESTAMPDIFF(SECOND, sent_on, now())',
         },
         where=[
@@ -46,7 +47,7 @@ def get_updates(request, client_secret, host_id):
                 AND (status = %s OR (status = %s AND (sent_on is null OR TIMESTAMPDIFF(SECOND, sent_on, now()) > %s))) ) \
              OR (successfull_host != %s and status = %s)'],
         params=[host_id, long_timeout, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, timeout, host_id, LABEL_STATUS_FAILED],
-    ).order_by('updated_on')
+    ).order_by('-has_host', '-fail_count', 'updated_on')
     
     label = None
     
@@ -88,6 +89,7 @@ def update_ack(request, client_secret, host_id, label_upc):
         elif status == 0:
             label.fail_count = label.fail_count + 1
             if label.fail_count >= 3:
+                label.fail_count = 0
                 label.status = LABEL_STATUS_FAILED
             label.save()
 

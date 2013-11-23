@@ -53,7 +53,6 @@ def product_list(request, client_id):
                 
                 for field in form.changed_data:
                     if not hasattr(product_listing, field):
-                        print "removing", field
                         form.changed_data.remove(field)
 
                 if form.cleaned_data['template_choices'] != label.template.id:
