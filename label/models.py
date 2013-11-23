@@ -203,6 +203,7 @@ class Label(BaseModel):
         
         if status:
             label.status = status
+            label.fail_count = 0
         
         label.save()
         
