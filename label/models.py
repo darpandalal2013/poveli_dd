@@ -178,7 +178,7 @@ class Label(BaseModel):
         # if we are trying to queue the label, set the queue time and fail count regardless
         if new_status == LABEL_STATUS_QUEUED:
             self.fail_count = 0
-            self.queued_on = datetime.now() # DBNow()
+            self.queued_on = DBNow()
             
             
     @staticmethod
@@ -213,10 +213,11 @@ class Label(BaseModel):
         label.size = size
         label.active = True
         
+        label.save()
+        
         if status:
             label.set_status(status)
-        
-        label.save()
+            label.save()
         
         return label
         

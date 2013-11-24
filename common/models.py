@@ -53,6 +53,10 @@ class DBNow(object):
 
         draft.created_on = DBNow()
         draft.save()
+        
+        NOTE: Currently doesn't work on new object creations (inserts). Alternatively you can
+        save the row with a datetime.now() first and then assign DBNow() and save to perform 
+        an update instead.
     """
     def __str__(self):
         return 'DATABASE NOW()'
