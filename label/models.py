@@ -110,19 +110,19 @@ class LabelTemplate(BaseModel):
             
         template = LabelTemplate(client=client, size=size)
         if size == LABEL_SIZE_SMALL:
-            template.title = 'Small'
+            template.title = '1.4"'
             template.title_pos = '10x12'
             template.title_font_size = '12'
             template.retail_pos = '10x50'
             template.retail_font_size = '34'
         elif size == LABEL_SIZE_SMALL_WIDE:
-            template.title = 'Small - Wide'
+            template.title = '2.0"'
             template.title_pos = '5x10'
             template.title_font_size = '14'
             template.retail_pos = '108x57'
             template.retail_font_size = '34'
         elif size == LABEL_SIZE_MEDIUM:
-            template.title = 'Medium'
+            template.title = '2.7"'
             template.title_pos = '10x10'
             template.title_font_size = '26'
             template.desc_pos = '10x50'
