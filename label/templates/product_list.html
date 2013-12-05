@@ -20,11 +20,11 @@
     
     <div class="topButtons">
         <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>Show All eLabels</a>
-        <a href="javascript:" class='btn btn-cancel btn-status all' href='{% url products client.id %}' onclick='$(".filters").toggle();'>eLabel Status Filters</a>
+        <a href="javascript:" class='btn btn-cancel btn-status filt' href='{% url products client.id %}' onclick='$(".filters").toggle();'>eLabel Status Filters</a>
         <span class="filters">
-            <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>Missing Information</a>
-            <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending eLabel Update</a>
-            <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed Update</a>
+            <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>Missing<br>Information</a>
+            <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending<br>Update</a>
+            <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed<br>Update</a>
         </span>
         
         {% if has_updates %}
