@@ -35,7 +35,7 @@
                     <a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a></div>
                     
                     <div id="editForm_{{label.upc}}" class="editForm">
-                        <div class="labelUpc">[ {{ label.upc }} ]</div>
+                        <div class="labelUpc">eLabel UPC: [ {{ label.upc }} ] &nbsp;&nbsp;|&nbsp;&nbsp; Product UPC: [ {{ label.product_listing.product.upc }} ]</div>
                         <form action="" method="post">{% csrf_token %}
                             <div class="row">
                             <div class="span4">
@@ -68,8 +68,8 @@
                             <div class="form-actions form-actions pull-right">
                                 <a href="javscript:" class="btn btn-cancel modal_close">Cancel</a>
                                 <input class="btn btn-cancel btn-delete" type="button" value="Delete" />
-                                <input class="btn btn-create" type="submit" name='action' value="Save" />
-                                <input class="btn btn-create" type="submit" name='action' value="Save &amp; Apply" />
+                                <input class="btn btn-create" type="submit" name='action' value="Save Pending Update" />
+                                <input class="btn btn-create" type="submit" name='action' value="Send to eLabel" />
                             </div>
                             </div>
                         </form>

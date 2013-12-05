@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block h1 %}Add Products / Labels{% endblock %}
+{% block h1 %}Assign eLabels to Products{% endblock %}
 
 {% block body %}
     <p>Scan or enter each product UPC and its eLabel barcode. Click save when all products and labels are scanned.</p>
@@ -27,7 +27,7 @@
             <div class="span5">
             <div class="form-actions pull-right">
                 <a href="{% url products client.id %}" class="btn btn-cancel modal_close">Cancel</a>
-                <input class="save btn btn-create" type="button" value="Save" />
+                <input class="save btn btn-create" type="button" value="Submit Assignments" />
             </div>
             </div>
     </form>
@@ -37,6 +37,13 @@
             var rowCount = 0;
             
             $template = $(".template");
+            
+            $(".barcodeForm").submit(function(e){
+                if (!confirm("Have you scanned or entered all product and eLabel barcodes?")){
+                    e.preventDefault();
+                    return false;
+                }
+            });
             
             $.fn.extend({
                 bindNextKey: function(){
@@ -61,6 +68,7 @@
             }
             
             addNew();
+            setTimeout(function(){$("#idbarcode_1_1").focus()},200);
             
             $('input.save').click(function(){$('form.barcodeForm').submit()});
         });

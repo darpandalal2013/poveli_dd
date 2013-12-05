@@ -38,8 +38,8 @@
                 </ul>
                 <ul class="nav pull-right">
                     {% if client %}
-                        <li><a class="{% active_starts request add_labels %} add_labels" href="{{ add_labels }}">Add New</a></li>
-                        <li><a class="{% active_starts request products %} products" href="{{ products }}">Products</a></li>
+                        <li><a class="{% active_starts request products %} products" href="{{ products }}">View All eLabels</a></li>
+                        <li><a class="{% active_starts request add_labels %} add_labels" href="{{ add_labels }}">Assign eLabels</a></li>
                     {% else %}
                         {% url choose_client as choose_client_url %}
                         {% if user.is_authenticated and choose_client_url != request.path %}

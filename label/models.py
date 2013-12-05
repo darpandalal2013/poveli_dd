@@ -20,16 +20,16 @@ FONT_SIZE_NAME = '12'
 FONT_SIZE_DESC = '10'
 FONT_SIZE_RETAIL = '28'
 FONT_SIZES = (
-    [(x, '%spx' % x) for x in range(10,60,2)]
+    [(x, '%spx' % x) for x in range(10,120,2)]
 )
 
 LABEL_SIZE_SMALL = '128x96'
 LABEL_SIZE_SMALL_WIDE = '200x96'
 LABEL_SIZE_MEDIUM = '264x176'
 LABEL_SIZES = (
-    (LABEL_SIZE_SMALL, 'Small'),
-    (LABEL_SIZE_SMALL_WIDE, 'Small Wide'),
-    (LABEL_SIZE_MEDIUM, 'Medium'),
+    (LABEL_SIZE_SMALL, '1.4"'),
+    (LABEL_SIZE_SMALL_WIDE, '2.0"'),
+    (LABEL_SIZE_MEDIUM, '2.7"'),
 )
 
 LABEL_SIG = {
@@ -214,10 +214,10 @@ class Label(BaseModel):
         label.active = True
         
         label.save()
-        
-        if status:
-            label.set_status(status)
-            label.save()
+
+        # we need to save again due to DBNow() bug not being able to do insert
+        label.set_status(status or LABEL_STATUS_PENDING)
+        label.save()
         
         return label
         

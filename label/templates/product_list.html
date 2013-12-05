@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block h1 %}Products{% endblock %}
+{% block h1 %}eLabels Management Dashboard{% endblock %}
 
 {% block messages %}
 <div class="row">
@@ -19,15 +19,17 @@
 {% block body %}
     
     <div class="topButtons">
-        <span class="title">Show: </span>
-        <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>All</a>
-        <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>New</a>
-        <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending</a>
-        <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed</a>
+        <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>Show All eLabels</a>
+        <a href="javascript:" class='btn btn-cancel btn-status all' href='{% url products client.id %}' onclick='$(".filters").toggle();'>eLabel Status Filters</a>
+        <span class="filters">
+            <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>Missing Information</a>
+            <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending eLabel Update</a>
+            <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed Update</a>
+        </span>
         
         {% if has_updates %}
             <a class='btn btn-create update' href='{% url update_labels client.id %}' 
-                onclick'return confirm("Are you sure you like to push all the pending edits to the labels?")'>Update Pending Labels</a>
+                onclick'return confirm("Are you sure you like to push all the pending edits to the labels?")'>Send Pending Edits to eLabels</a>
         {% endif %}
     </div>
     
@@ -62,6 +64,10 @@
     <script>
     $(function(){
         $(".searchBox .input").focus();
+        
+        if ($(".filters a.active").length>0){
+            $(".filters").show();
+        }
         
         $(".imgEditLink, .editLink").click(function(e){
             var $status = $(this).closest(".product").find(".status"); 

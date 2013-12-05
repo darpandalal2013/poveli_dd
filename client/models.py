@@ -21,6 +21,11 @@ class Client(BaseModel):
 
     # Fields
     name = models.CharField(max_length=255, blank=False, unique=True, db_index=True)
+    # store type (Shell, 76, ...)
+    # POS Type
+    # Backoffice Name
+    # Address
+    # Owners Name
     phone = models.CharField(max_length=20, blank=True, null=True)
     logo = models.ImageField(max_length=255, upload_to='client/logos/', blank=True, null=True)
     email = models.EmailField(max_length=255, blank=True, null=True)
