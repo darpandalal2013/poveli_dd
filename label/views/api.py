@@ -62,7 +62,7 @@ def get_updates(request, client_key, host_id):
         labels.update()
             
     #return JsonResponse(success=True, data={'labels': labels})
-    return HttpResponse(label.upc if label else '')
+    return HttpResponse("%s:%s" % (label.upc, label.slave_id) if label else '')
 
 def update_ack(request, client_key, host_id, label_upc):
     try: 

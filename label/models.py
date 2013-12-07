@@ -164,6 +164,10 @@ class Label(BaseModel):
         db_table = u'label'
         unique_together = (('client', 'upc'),)
 
+    @property
+    def slave_id(self):
+        return (len(self.upc)>4 and self.upc[-4:]) or self.upc
+        
     def is_updated(self):
         return self.status == LABEL_STATUS_PENDING or not self.sent_on or self.template.updated_on > self.sent_on
     
