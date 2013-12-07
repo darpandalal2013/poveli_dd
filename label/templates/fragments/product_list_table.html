@@ -12,7 +12,7 @@
     </thead>
     <tbody>
 
-        {% if not labels %} <tr><td colspan="7">No products found</td></tr> {% endif %}
+        {% if not labels %} <tr><td colspan="7">No eLabels found</td></tr> {% endif %}
         {% for label in labels %}
             <tr id="{{ label.upc }}" class="product {% cycle 'odd' 'even' %} status-{{ label.status }}">
                 <td class="productUpc"><div class="status {{ label.status }}" title="{{ label.get_status_display }}"></div> {{ label.upc }}</td>

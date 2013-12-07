@@ -47,7 +47,9 @@ def get_updates(request, client_key, host_id):
                 AND (status = %s OR (status = %s AND (sent_on is null OR TIMESTAMPDIFF(SECOND, sent_on, now()) > %s))) ) \
              OR (successfull_host != %s and status = %s)'],
         params=[host_id, long_timeout, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, timeout, host_id, LABEL_STATUS_FAILED],
-    ).order_by('-has_host', '-fail_count', 'updated_on')
+    ).order_by('-has_host', 'fail_count', 'updated_on')
+    
+    print labels.query
     
     label = None
     
