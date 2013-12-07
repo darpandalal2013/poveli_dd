@@ -154,6 +154,21 @@ def get_bitmap(request, client_key, host_id, label_upc):
     return response
 
 @csrf_exempt
+def resend_label(request, client_key, label_upc):
+    error = ''
+    data = {}
+    
+    try:
+        label = Label.objects.get(client__client_key=client_key, upc=label_upc)
+        if label.status != LABEL_STATUS_QUEUED:
+            label.set_status(LABEL_STATUS_QUEUED)
+            label.save()
+    except Exception as e:
+        error = str(e)
+        
+    return JsonResponse(success=not error, data=data, errors=[error] if error else None)
+    
+@csrf_exempt
 def pricebook_upload(request, client_key):
     error = None
     pricebook = None

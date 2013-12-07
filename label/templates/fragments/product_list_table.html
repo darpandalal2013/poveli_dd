@@ -32,7 +32,9 @@
                 <td>{{ label.product_listing.multipack_code|default:""}} {{ label.product_listing.get_unit_display }}</td>
                 
                 <td><div class="btn-mini">
-                    <a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a></div>
+                    <a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a>
+                    <a class="resendLink btn btn-cancel" data-upc="{{label.upc}}" href="javascript:">{% if label.status == 'PEN' %}Resend{% else %}Send Now{% endif %}</a>
+                    </div>
                     
                     <div id="editForm_{{label.upc}}" class="editForm">
                         <div class="labelUpc">eLabel UPC: [ {{ label.upc }} ] &nbsp;&nbsp;|&nbsp;&nbsp; Product UPC: [ {{ label.product_listing.product.upc }} ]</div>
@@ -79,7 +81,20 @@
             </tr>
         {% endfor %}
 
-
+    <script>
+        $(function(){
+            $(".resendLink").click(function(){
+                var upc_label = $(this).data('upc');
+                $.ajax({
+                    url: '{% url resend_label client.client_key ":label" %}'.replace(':label', upc_label),
+                    cache: false,
+                    success: function(res){
+                        alert("Label is now being sent.");
+                    }
+                })
+            });
+        })
+    </script>
 
     </tbody>
 </table>

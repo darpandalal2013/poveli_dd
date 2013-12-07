@@ -55,16 +55,17 @@ def product_list(request, client_id):
                 if not hasattr(product_listing, field):
                     form.changed_data.remove(field)
 
-            if form.cleaned_data['template_choices'] != label.template.id:
+            # if the label template has changed or the new status is being pushed...
+            if form.cleaned_data['template_choices'] != label.template.id or new_status == LABEL_STATUS_PENDING:
                 label.template = LabelTemplate.objects.get(id=form.cleaned_data['template_choices'])
                 label.set_status(new_status)
                 label.save()
-
+                
             if form.has_changed():
                 for l in label.product_listing.labels.all_active():
                     l.set_status(new_status)
                     l.save()
-                    
+            
             messages.success(request, "Changes Saved.")
         
         else:
