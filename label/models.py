@@ -103,7 +103,7 @@ class LabelTemplate(BaseModel):
         if templates:
             if category:
                 for template in templates:
-                    if template.category == category:
+                    if category in template.category or category in template.title:
                         return template
                         
             return templates[0]
