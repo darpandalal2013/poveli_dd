@@ -23,7 +23,7 @@ def get_product_info(request, client_key, upc):
                 data['exists'] = True
                 data['title'] = product_listing.title_disp
                 data['desc'] = product_listing.description_disp
-                data['retail'] = str(product_listing.retail)
+                data['retail'] = "%s" % str(product_listing.retail)
             else:
                 product = Product.objects.filter(upc=upc)
                 if product:

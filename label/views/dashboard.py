@@ -127,23 +127,40 @@ def add_labels(request, client_id):
         try:
             barcodes = dict()
             for (k, v) in request.POST.iteritems():
-                i = k.rpartition('_')[2]
-                if k.startswith('barcode') and v:
-                    if not barcodes.has_key(i):
-                        barcodes[i] = dict() 
+                field, tmp, i = k.rpartition('_')
+                if not barcodes.has_key(i):
+                    barcodes[i] = dict() 
+                if field.startswith('barcode') and v:
                     if Label.get_label_size_by_upc(v):
                         barcodes[i]['l'] = v
                     else:
                         barcodes[i]['p'] = v
-                    
+                else:
+                    barcodes[i][field] = v
+                
+            has_errors = 0
+            added = 0
             for barcode in barcodes.values():
                 if barcode.has_key('p'):
-                    product_listing, dirty = ProductListing.add_or_update(client, barcode['p'])
+                    product_upc = barcode['p']
+                    try:
+                        params = {}
+                        if barcode.get('title'): params['title'] = barcode.get('title')
+                        if barcode.get('category'): params['category'] = barcode.get('category')
+                        if barcode.get('retail'): params['retail'] = barcode.get('retail')
+                        product_listing, dirty = ProductListing.add_or_update(client, product_upc, **params)
                     
-                    if barcode.has_key('l'):
-                        label = Label.add_label(client, barcode['l'], product_listing)
+                        if barcode.has_key('l'):
+                            label = Label.add_label(client, barcode['l'], product_listing)
+                            
+                        added += 1
+                    except Exception as e:
+                        has_errors += 1
+                        messages.error(request, "Failed to add product %s: %s" % (product_upc, str(e)))
         
-            messages.success(request, "Products and labels added.")
+            if added: 
+                messages.success(request, "%s products / labels added." % added)
+                
             return product_redirector(client.id)
             
         except Exception as e:

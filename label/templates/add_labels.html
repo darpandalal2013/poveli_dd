@@ -6,16 +6,28 @@
     <p>Scan or enter each product UPC and its eLabel barcode. Click save when all products and labels are scanned.</p>
     
     <div class="template">
-        <div class="row">
-            <div class="span2"><label>Product #:</label></div>
-            <div class="span3"><input type="text" id="idbarcode_1_#" name="barcode_1_#"></div>
-            <div class="span3"><input type="text" id="idbarcode_2_#" name="barcode_2_#"></div>
+        <div class="row productRow" data-idx="#">
+            <div class="span1"><label>Product:</label></div>
+            <div class="span3"><input type="text" class="barcode" id="idbarcode_1_#" name="barcode_1_#"></div>
+            <div class="span3"><input type="text" class="barcode" id="idbarcode_2_#" name="barcode_2_#"></div>
+
+            <div class="span6">
+                <div class="barcodeDetails hide barcode_#">
+                    <div class="info"></div>
+                    <div class="edit hide">
+                        <input type="text" class="title" id="idtitle_#" name="title_#" placeholder="Product Title...">
+                        <input type="text" class="category" id="idcategory_#" name="category_#" placeholder="Category...">
+                        $<input type="text" class="retail" id="idretail_#" name="retail_#" placeholder="Retail...">
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 
     <form class="dataTable barcodeForm" action="" method="post">{% csrf_token %}
         <div class="row tableHeader">
-            <div class="span3 offset2">Product UPC</div>
+            <div class="span3 offset1">Product UPC</div>
             <div class="span3">Label Barcode</div>
         </div>
 
@@ -43,6 +55,55 @@
                     e.preventDefault();
                     return false;
                 }
+            });
+            
+            $(".barcodeForm .barcode").live('change', function(){
+                var upc = $(this).val();
+                var idx = $(this).closest('.productRow').data('idx');
+                var $productRow = $(this).closest('.productRow');
+                console.log('doing ajax: ' + "/api/{{ client.client_key }}/product/" + upc + "/get-info/");
+                if (!upc) return;
+                $.ajax({
+                    url: "/api/{{ client.client_key }}/product/" + upc + "/get-info/",
+                    dataType: 'json',
+                    cache: false,
+                    success: function(res){
+                        if (res && res.success && res.type == 'product'){
+                            $productRow.find('.edit .title').val(res.title || '');
+                            $productRow.find('.edit .category').val(res.category || '');
+                            $productRow.find('.edit .retail').val(res.retail || '');
+
+                            if (res.exists){
+                                $productRow.find('.info').empty()
+                                    .append($("<span>").addClass("title").html(res.title))
+                                    .append($("<span>").addClass("retail").html(res.retail? "$"+res.retail : ""))
+                                    .append($('<a href="javascript:">').html('Edit')
+                                        .click(function(){
+                                            $(this).parent().hide();
+                                            $productRow.find(".edit").show();
+                                        })
+                                    )                                .show();
+                            
+                                $productRow.find('.barcodeDetails').show();
+                                
+                            }else if (upc){
+                                $productRow.find('.info').empty()
+                                    .append($('<a href="javascript:">').html('New product. Click to add details.')
+                                        .click(function(){
+                                            $(this).parent().hide();
+                                            $productRow.find(".edit").show();
+                                        })
+                                    );
+
+                                $productRow.find('.barcodeDetails').show();
+                                
+                            }else{
+                                $productRow.find('.barcodeDetails').hide();
+                            }
+
+                        }
+                    }
+                })
             });
             
             $.fn.extend({

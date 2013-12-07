@@ -36,7 +36,8 @@ class BaseModel(models.Model):
         abstract = True
 
     def _trim_char_field(self, field_name):
-        setattr(self, field_name, getattr(self, field_name, '')[:self._meta.get_field_by_name(field_name)[0].max_length])
+        if getattr(self, field_name, ''):
+            setattr(self, field_name, getattr(self, field_name, '')[:self._meta.get_field_by_name(field_name)[0].max_length])
 
     ### Managers
     #objects = models.Manager()
