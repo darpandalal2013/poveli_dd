@@ -217,4 +217,4 @@ def pricebook_upload(request, client_key):
         
     }
 
-    return JsonResponse(success=not error, data=data, errors=[error])
+    return JsonResponse(success=not error, data=data, errors=[error] if error else None)

@@ -47,7 +47,7 @@ def product_list(request, client_id):
             messages.success(request, "Label deleted.")
         
         elif form.is_valid():
-            new_status = LABEL_STATUS_QUEUED if request.REQUEST['action'] != 'Save' else LABEL_STATUS_PENDING
+            new_status = LABEL_STATUS_QUEUED if 'Send' in request.REQUEST['action'] else LABEL_STATUS_PENDING
             
             form.save()
             

@@ -192,7 +192,7 @@ class Label(BaseModel):
         
     @staticmethod
     def get_label_size_by_upc(upc):
-        return len(upc)==4 and LABEL_SIG.get(upc[:2],None)
+        return (len(upc)==4 and LABEL_SIG.get(upc[2:4],None)) or (upc[:2]=='PV' and LABEL_SIG.get(upc[2:4],None))
         
     @staticmethod
     def add_label(client, upc, product_listing, status=None):

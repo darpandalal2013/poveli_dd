@@ -115,8 +115,10 @@ class ProductListing(BaseModel):
     def title_disp(self):
         return self.title or self.product.title
 
+    @property
     def description_disp(self):
         return self.description or self.product.description
 
+    @property
     def thumb(self):
         return self.image or self.product.image or self.product.image_external
