@@ -48,9 +48,7 @@ def get_updates(request, client_key, host_id):
              OR (successfull_host != %s and status = %s)'],
         params=[host_id, long_timeout, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, timeout, host_id, LABEL_STATUS_FAILED],
     ).order_by('-has_host', 'fail_count', 'updated_on')
-    
-    print labels.query
-    
+        
     label = None
     
     if (labels.count()>0):
@@ -146,8 +144,16 @@ def get_bitmap(request, client_key, host_id, label_upc):
 
     retail_pos = pos(template.retail_pos)
     if retail_pos:
-        draw.text(retail_pos, '$%s' % product_listing.retail, font=get_font(template.retail_font, template.retail_font_size), fill='black')
+        retail_int, tmp, retail_dec = str(product_listing.retail).partition(".")
+        int_font = get_font(template.retail_font, template.retail_font_size)
+        dec_font = get_font(template.retail_font, max(template.retail_font_size - 40, 12))
+        int_size = draw.textsize('$%s' % retail_int, font=int_font)
+        dec_size = draw.textsize('.%s' % retail_dec, font=dec_font)
+        retail_dec_pos = (retail_pos[0] + int_size[0], retail_pos[1] + (template.retail_font_size/8))
+        total_width = int_size[0] + dec_size[0]
 
+        draw.text(retail_pos, '$%s' % retail_int, font=int_font, fill='black')
+        draw.text(retail_dec_pos, '.%s' % retail_dec, font=dec_font, fill='black')
 
     im.save(response, "BMP");
 
