@@ -33,7 +33,7 @@
                 
                 <td><div class="btn-mini">
                     <a class="editLink btn btn-create" href="#editForm_{{label.upc}}">Edit</a>
-                    <a class="resendLink btn btn-cancel" data-upc="{{label.upc}}" href="javascript:">{% if label.status == 'PEN' %}Resend{% else %}Send Now{% endif %}</a>
+                    <a class="resendLink btn btn-cancel" data-upc="{{label.upc}}" href="javascript:">{% if label.status == 'PEN' %}Send Now{% else %}Resend{% endif %}</a>
                     </div>
                     
                     <div id="editForm_{{label.upc}}" class="editForm">

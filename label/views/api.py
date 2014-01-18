@@ -42,13 +42,15 @@ def get_updates(request, client_key, host_id):
             'timer': 'TIMESTAMPDIFF(SECOND, sent_on, now())',
         },
         where=[
-            '(\
+            '((\
                 (coalesce(successfull_host,\'\') = \'\' OR successfull_host = %s OR TIMESTAMPDIFF(SECOND, sent_on, now()) > %s) \
                 AND (status = %s OR (status = %s AND (sent_on is null OR TIMESTAMPDIFF(SECOND, sent_on, now()) > %s))) ) \
-             OR (successfull_host != %s and status = %s)'],
+             OR (successfull_host != %s and status = %s))'],
         params=[host_id, long_timeout, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, timeout, host_id, LABEL_STATUS_FAILED],
-    ).order_by('-has_host', 'fail_count', 'updated_on')
-        
+    ).order_by('fail_count', '-has_host', 'updated_on')
+    
+    print labels.query
+    
     label = None
     
     if (labels.count()>0):
