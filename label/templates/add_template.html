@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block h1 %}Add Template{% endblock %}
+
+{% block messages %}
+<div class="row">
+    <div class="span12">
+        {% for message in messages %}
+            <div class="alert {% if message.tags and message.tags != 'warning' %}alert-{{ message.tags }}{% endif %}">
+            <a class="close" data-dismiss="alert">×</a>
+                {{ message|safe }}
+            </div>
+        {% endfor %}
+        {% block alerts %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    
+    <div class="topButtons">
+        <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>Show All eLabels</a>
+        <a href="javascript:" class='btn btn-cancel btn-status filt' href='{% url products client.id %}' onclick='$(".filters").toggle();'>eLabel Status Filters</a>
+        <span class="filters">
+            <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>Missing<br>Information</a>
+            <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending<br>Update</a>
+            <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed<br>Update</a>
+        </span>
+        
+        {% if has_updates %}
+            <a class='btn btn-create update' href='{% url update_labels client.id %}' 
+                onclick'return confirm("Are you sure you like to push all the pending edits to the labels?")'>Send Pending Edits to eLabels</a>
+        {% endif %}
+    </div>
+    
+    <div class="searchBox">
+        <form><input class="input" placeholder="search keyword or barcode" name="q" value="{{ search_term }}"><input class="btn btn-create" type="submit" value="&gt;"></form>
+    </div>
+        
+    <div class="dataTable">
+           <form method="POST" action="/company/{{ client.id }}/template_add/">
+				{% csrf_token %}
+				{{ form.non_field_errors }}
+				{{ form.as_p }}
+				<input type="submit" value="save">
+			</form>
+        
+    </div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if labels.has_previous %}
+                <a href="?page={{ labels.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ labels.number }} / {{ labels.paginator.num_pages }}
+            </span>
+
+            {% if labels.has_next %}
+                <a href="?page={{ labels.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+    
+    <script>
+    $(function(){
+        $(".searchBox .input").focus();
+        
+        if ($(".filters a.active").length>0){
+            $(".filters").show();
+        }
+        
+        $(".imgEditLink, .editLink").click(function(e){
+            var $status = $(this).closest(".product").find(".status"); 
+            if ($status.hasClass('U')){
+                alert("Sorry, you cannot edit items while being updated.");
+                if (this.href){
+                    $(this).data('dialogHref',this.href);
+                    this.href='';
+                }
+            }else if($(this).data('dialogHref')){
+                this.href=$(this).data('dialogHref');
+            }
+        });
+        
+        $(".editForm").draggable()/*.bind('mousewheel',function(e){
+            if(e.originalEvent && e.originalEvent.wheelDeltaY){
+                $(this).scrollTop($(this).scrollTop()-e.originalEvent.wheelDeltaY);
+                e.preventDefault();
+            }
+        })*/;
+        $(".product").each(function(){
+            $(this).find('.editLink, .imgEditLink').leanModal({overlay : 0.4, closeButton: ".modal_close"})
+        });
+        $(".btn-delete").click(function(){
+            if (confirm("Are you sure you want to delete this label?")){
+                $(this).closest('form').find('input[name=delete_label]').val('1');
+                $(this).closest('form').submit();
+            }
+        });
+        
+        var updateTimeout = 5000;
+        function updateStatuses(){
+            upcs = [];
+            $(".product").each(function(){upcs.push(this.id)});
+            $.ajax({
+                url: '{% url get_label_status client.client_key %}',
+                data: {upcs: upcs.join(',')},
+                cache: false,
+                dataType: 'json',
+                type: 'POST',
+                success: function(res){
+                    if (res && res.status){
+                        var statuses = res.status;
+                        for (var upc in statuses){
+                            $(".product#"+upc).removeClass(($(".product#"+upc).attr('class').match(/status-\w+/)||[])[0]).addClass('status-'+statuses[upc])
+                            $(".product#"+upc+" .status").removeClass().addClass("status").addClass(statuses[upc]);
+                        }
+                    }
+                }
+            })
+            setTimeout(updateStatuses, updateTimeout);
+        }
+        setTimeout(updateStatuses, updateTimeout);
+    });
+    </script>
+{% endblock %}

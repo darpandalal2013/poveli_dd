@@ -1,10 +1,10 @@
 from django.contrib import admin
-from label.models import Label, LabelTemplate
+from label.models import Label, Template, TemplatePart
 
-class LabelTemplateAdmin(admin.ModelAdmin):
-    list_display = ('client', 'title', 'size', 'category')
-    list_filter = ('client', 'size')
-    search_fields = ('client', )
+class TemplateAdmin(admin.ModelAdmin):
+    list_display = ('size',)
+    list_filter = ('size',)
     
 admin.site.register(Label)
-admin.site.register(LabelTemplate, LabelTemplateAdmin)
+admin.site.register(TemplatePart)
+admin.site.register(Template, TemplateAdmin)

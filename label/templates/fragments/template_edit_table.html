@@ -1,0 +1,344 @@
+    <meta charset="utf-8">
+    <title>Tag-it! Example</title>
+    <link href="{{ STATIC_URL }}global/taggit/css/jquery.tagit.css" rel="stylesheet" type="text/css">
+    <script>
+        $(function(){
+            var sampleTags = ['c++', 'java', 'php', 'coldfusion', 'javascript', 'asp', 'ruby', 'python', 'c', 'scala', 'groovy', 'haskell', 'perl', 'erlang', 'apl', 'cobol', 'go', 'lua'];
+
+            //-------------------------------
+            // Minimal
+            //-------------------------------
+            $('#myTags').tagit();
+
+            //-------------------------------
+            // Single field
+            //-------------------------------
+            $('#singleFieldTags').tagit({
+                availableTags: sampleTags,
+                // This will make Tag-it submit a single form value, as a comma-delimited field.
+                singleField: true,
+                singleFieldNode: $('#mySingleField')
+            });
+
+            // singleFieldTags2 is an INPUT element, rather than a UL as in the other 
+            // examples, so it automatically defaults to singleField.
+            $('#singleFieldTags2').tagit({
+                availableTags: sampleTags
+            });
+
+            //-------------------------------
+            // Preloading data in markup
+            //-------------------------------
+            $('#myULTags').tagit({
+                availableTags: sampleTags, // this param is of course optional. it's for autocomplete.
+                // configure the name of the input field (will be submitted with form), default: item[tags]
+                itemName: 'item',
+                fieldName: 'tags'
+            });
+
+            //-------------------------------
+            // Tag events
+            //-------------------------------
+            var eventTags = $('#eventTags');
+
+            var addEvent = function(text) {
+                $('#events_container').append(text + '<br>');
+            };
+
+            eventTags.tagit({
+                availableTags: sampleTags,
+                beforeTagAdded: function(evt, ui) {
+                    if (!ui.duringInitialization) {
+                        addEvent('beforeTagAdded: ' + eventTags.tagit('tagLabel', ui.tag));
+                    }
+                },
+                afterTagAdded: function(evt, ui) {
+                    if (!ui.duringInitialization) {
+                        addEvent('afterTagAdded: ' + eventTags.tagit('tagLabel', ui.tag));
+                    }
+                },
+                beforeTagRemoved: function(evt, ui) {
+                    addEvent('beforeTagRemoved: ' + eventTags.tagit('tagLabel', ui.tag));
+                },
+                afterTagRemoved: function(evt, ui) {
+                    addEvent('afterTagRemoved: ' + eventTags.tagit('tagLabel', ui.tag));
+                },
+                onTagClicked: function(evt, ui) {
+                    addEvent('onTagClicked: ' + eventTags.tagit('tagLabel', ui.tag));
+                },
+                onTagExists: function(evt, ui) {
+                    addEvent('onTagExists: ' + eventTags.tagit('tagLabel', ui.existingTag));
+                }
+            });
+
+            //-------------------------------
+            // Read-only
+            //-------------------------------
+            $('#readOnlyTags').tagit({
+                readOnly: true
+            });
+
+            //-------------------------------
+            // Tag-it methods
+            //-------------------------------
+            $('#methodTags').tagit({
+                availableTags: sampleTags
+            });
+
+            //-------------------------------
+            // Allow spaces without quotes.
+            //-------------------------------
+            $('#allowSpacesTags').tagit({
+                availableTags: sampleTags,
+                allowSpaces: true
+            });
+
+            //-------------------------------
+            // Remove confirmation
+            //-------------------------------
+            $('#removeConfirmationTags').tagit({
+                availableTags: sampleTags,
+                removeConfirmation: true
+            });
+            
+        });
+    </script>
+
+<div class="row">
+	<div class="span8">
+			<div class="span10">
+			<div class="">
+				Edit Template
+			</div>
+			<form method="POST" action="{% url /company/{{ client.id }}/template_update % }/" class="form">
+				<input type="hidden" name="client_id" value="{{ client.id }}">
+				<div class="">
+					<input type="text" placeholder="template name" name="template_name" id="template_name"  value="{{ label.template.title }}">
+				</div>
+				<div class="">
+					<textarea value="{{ label.template.category }}"> {{ label.template.category }}</textarea>
+				</div><br>
+			</div>
+	</div>
+	
+	<div class="span8">
+		<div>
+			{% csrf_token %}
+			<div id="accordion" class="span7">
+				<h3>Product Title</h3>
+				<div>
+					{{ form.non_field_error }}									
+					<div class="fieldWrapppper">
+						{{ form.data_field.error }}
+						<label for="id_data_field">Data Field</label>
+						{{ form.data_field}}						
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.horizontal_align.error }}
+						<label for="id_horizontal_align">Horizontal Align</label>
+						{{ form.horizontal_align}}						
+					</div>
+
+					
+					<div class="fieldWrapppper">
+						{{ form.vertical_align.error }}
+						<label for="id_vertical_align">Verticle Align</label>
+						{{ form.vertical_align}}			
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.top.error }}
+						<label for="id_top">Top</label>
+						{{ form.top}}					
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.left.error }}
+						<label for="id_top">Left</label>
+						{{ form.left}}					
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.font_family.error }}
+						<label for="id_font_family">Font Family</label>
+								{{ form.font_family}}						
+					</div>	
+				
+					<div class="fieldWrapppper">
+						{{ form.font_size.error }}
+						<label for="id_font_size">Title Font Size</label>
+								{{ form.font_size}}						
+					</div>	
+
+					<div class="fieldWrapppper">
+						{{ form.background_image.error }}
+						<label for="id_background_imag">Background Image</label>
+								{{ form.background_image}}						
+					</div>	
+
+					<div class="">
+						<input type="checkbox" placeholder="font Size" name="font_size">
+						Show small cent for numerical value
+					</div>
+
+					<div class="">
+						Click on the preview image to the right to set placement for this template  part
+					</div>
+				</div>
+
+				<h3>Product Description</h3>
+				<div>
+					{{ form.non_field_error }}									
+					<div class="fieldWrapppper">
+						{{ form.data_field.error }}
+						<label for="id_data_field">Data Field</label>
+						{{ form.data_field}}						
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.horizontal_align.error }}
+						<label for="id_horizontal_align">Horizontal Align</label>
+						{{ form.horizontal_align}}						
+					</div>
+
+					
+					<div class="fieldWrapppper">
+						{{ form.vertical_align.error }}
+						<label for="id_vertical_align">Verticle Align</label>
+						{{ form.vertical_align}}			
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.top.error }}
+						<label for="id_top">Top</label>
+						{{ form.top}}					
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.left.error }}
+						<label for="id_top">Left</label>
+						{{ form.left}}					
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.font_family.error }}
+						<label for="id_font_family">Font Family</label>
+								{{ form.font_family}}						
+					</div>	
+				
+					<div class="fieldWrapppper">
+						{{ form.font_size.error }}
+						<label for="id_font_size">Title Font Size</label>
+								{{ form.font_size}}						
+					</div>	
+
+					<div class="fieldWrapppper">
+						{{ form.background_image.error }}
+						<label for="id_background_imag">Background Image</label>
+								{{ form.background_image}}						
+					</div>	
+
+					<div class="">
+						<input type="checkbox" placeholder="font Size" name="font_size">
+						Show small cent for numerical value
+					</div>
+
+					<div class="">
+						Click on the preview image to the right to set placement for this template  part
+					</div>
+				</div>
+
+				<h3>Product Price</h3>
+				<div>
+					{{ form.non_field_error }}									
+					<div class="fieldWrapppper">
+						{{ form.data_field.error }}
+						<label for="id_data_field">Data Field</label>
+						{{ form.data_field}}						
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.horizontal_align.error }}
+						<label for="id_horizontal_align">Horizontal Align</label>
+						{{ form.horizontal_align}}						
+					</div>
+
+					
+					<div class="fieldWrapppper">
+						{{ form.vertical_align.error }}
+						<label for="id_vertical_align">Verticle Align</label>
+						{{ form.vertical_align}}			
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.top.error }}
+						<label for="id_top">Top</label>
+						{{ form.top}}					
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.left.error }}
+						<label for="id_top">Left</label>
+						{{ form.left}}					
+					</div>
+
+					<div class="fieldWrapppper">
+						{{ form.font_family.error }}
+						<label for="id_font_family">Font Family</label>
+								{{ form.font_family}}						
+					</div>	
+				
+					<div class="fieldWrapppper">
+						{{ form.font_size.error }}
+						<label for="id_font_size">Title Font Size</label>
+								{{ form.font_size}}						
+					</div>	
+
+					<div class="fieldWrapppper">
+						{{ form.background_image.error }}
+						<label for="id_background_imag">Background Image</label>
+								{{ form.background_image}}						
+					</div>	
+
+					<div class="">
+						<input type="checkbox" placeholder="font Size" name="font_size">
+						Show small cent for numerical value
+					</div>
+
+					<div class="">
+						Click on the preview image to the right to set placement for this template  part
+					</div>
+				</div>
+				
+				<h3> Static Text/Image</h3>
+				<div>
+					<p></p>
+				</div>
+			</div>
+		</div>
+		
+		<div style="margin-top:30px;">			
+			<div>				
+				<div>		
+					<button type="button" data-toggle="button" style="width: 300px;">Add New Parts</button><br/><br/>
+				</div>
+				<div>
+					<button type="submit" data-toggle="button" style="width: 300px;">Add New Parts</button><br/><br/>
+					<button type="button" data-toggle="button" style="width: 540px;">Cancel</button><br><br/>
+			
+				</div>
+			</div>
+
+			<script>
+				$( "#accordion" ).accordion();
+			</script>
+		</div>			
+		</form>
+	
+
+	</div>
+	<div class="span5 hero-unit" style="height:50px; border-style:solid; height:200px;">
+		
+	</div>
+</div>

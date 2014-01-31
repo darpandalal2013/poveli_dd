@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block h1 %}Template Management Dashboard{% endblock %}
+
+{% block messages %}
+<div class="row">
+    <div class="span12">
+        {% for message in messages %}
+            <div class="alert {% if message.tags and message.tags != 'warning' %}alert-{{ message.tags }}{% endif %}">
+            <a class="close" data-dismiss="alert">×</a>
+                {{ message|safe }}
+            </div>
+        {% endfor %}
+        {% block alerts %}{% endblock %}
+    </div>
+</div>
+{% endblock %}
+
+{% block body %}
+    
+    <div class="topButtons">
+        <a class='btn btn-cancel btn-status all' href='{% url products client.id %}'>Show All eLabels</a>
+        <a href="javascript:" class='btn btn-cancel btn-status filt' href='{% url products client.id %}' onclick='$(".filters").toggle();'>eLabel Status Filters</a>
+        <span class="filters">
+            <a class='btn btn-cancel btn-status {% if sel_status == 'NEW' %}active{% endif %}' href='{% url products client.id %}?sel_status=NEW'><span class='icon'></span>Missing<br>Information</a>
+            <a class='btn btn-cancel btn-status {% if sel_status == 'PEN' %}active{% endif %}' href='{% url products client.id %}?sel_status=PEN'><span class='icon'></span>Pending<br>Update</a>
+            <a class='btn btn-cancel btn-status fail {% if sel_status == 'FAI' %}active{% endif %}' href='{% url products client.id %}?sel_status=FAI'><span class='icon'></span>Failed<br>Update</a>
+        </span>
+        
+        {% if has_updates %}
+            <a class='btn btn-create update' href='{% url update_labels client.id %}' 
+                onclick'return confirm("Are you sure you like to push all the pending edits to the labels?")'>Send Pending Edits to eLabels</a>
+        {% endif %}
+    </div>
+    
+    <div class="searchBox">
+        <form><input class="input" placeholder="search keyword or barcode" name="q" value="{{ search_term }}"><input class="btn btn-create" type="submit" value="&gt;"></form>
+    </div>
+        
+    <div class="dataTable">
+            <table class="tableView">
+				<thead>
+					<tr>
+						<th>Shelf Lable Id</th>
+						<th>Product/Description</th>
+						<th>Product Category</th>
+						<th>UPC</th>
+						<th>Retail Price</th>
+						<th>Qty/Unit</th>  
+						<th>Action</th>
+					</tr>
+				</thead>  
+				<tbody>
+					{% if not labels %} <tr><td colspan="7">No eLabels found</td></tr> {% endif %}
+					{% for label  in labels %}
+						<tr class="product" id="{{ label.id }}" >
+						    <td class="productUpc">{{ label.id }}</td>
+						    <td>{{ label.product_listing.description}}</td>
+						    <td>{{ label.product_listing.product.category}}</td>
+						    <td>{{ label.upc }}</td>
+						    <td>{{ label.product_listing.retail }}</td>
+							<td></td>
+						    <td>              
+						        <div class="btn-mini">
+						            <a class="btn btn-create"  href="/company/{{ client.id }}/template_update/{{ label.id }}/">Edit</a>
+						            <a class="resendLink btn btn-cancel" data-upc="{{label.id}}" href="javascript:">Send Now</a>
+						        </div>
+						    </td>
+						</tr>
+					{% endfor %}
+				</tbody>
+		</table>
+	</div>
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if labels.has_previous %}
+                <a href="?page={{ labels.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ labels.number }} / {{ labels.paginator.num_pages }}
+            </span>
+
+            {% if labels.has_next %}
+                <a href="?page={{ labels.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+{% endblock %}

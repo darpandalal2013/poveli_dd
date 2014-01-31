@@ -13,10 +13,13 @@ from django.db.models import Q, F
 from common.decorators import client_access_required
 from common.models import DBNow
 from client.models import Client
-from label.models import LabelTemplate, Label, LABEL_STATUS_NEW, LABEL_STATUS_PUBLISHED, \
+from label.models import Template, Label, LABEL_STATUS_NEW, LABEL_STATUS_PUBLISHED, \
     LABEL_STATUS_PENDING, LABEL_STATUS_QUEUED, LABEL_STATUS_UPDATING, LABEL_STATUS_FAILED
 from product.forms import ProductListingForm
+from label.forms import  LabelAddForm, DivErrorList
 from product.models import Product, ProductListing
+from django.http import HttpResponseRedirect
+from label.forms import TemplatePartEditForm
 
 def product_redirector(client_id):
     return redirect(reverse('products', kwargs={'client_id': client_id}))
@@ -174,3 +177,77 @@ def add_labels(request, client_id):
     }
 
     return render(request, 'add_labels.html', params)
+
+
+
+
+@login_required
+@client_access_required
+def template_list(request, client_id):
+    client = Client.objects.get(id=client_id)
+    obj = Label()          
+    all_labels = obj.get_all_label_by_client(client)#
+    q = request.REQUEST.get('q',None)
+    params = {
+        'client': client,
+        'labels': all_labels,
+	}
+    return render(request, 'template_list.html', params)
+
+@login_required
+@client_access_required
+def template_add(request, client_id):
+    client = Client.objects.get(id=client_id)
+    form = LabelAddForm(error_class=DivErrorList)
+
+    if request.method == 'POST':
+		form = LabelAddForm(request.POST, auto_id=False, error_class=DivErrorList)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect("/company/"+str(client_id)+"/template_list/") 
+
+    params = {
+		'client': client,
+		'form': form
+	}
+    return render(request, 'add_template.html', {'client': client, 'form': form})
+
+
+@login_required
+@client_access_required
+def template_edit(request, client_id, label_id):
+    client = Client.objects.get(id=client_id)
+    all_title = ProductListing.objects.filter(client = client)
+    obj = Label()
+    labelobj = Label.objects.filter(id = int(label_id))[0]
+    label = Label.objects.filter(id = int(label_id))[0].template#obj.get_label_by_id(int(label_id))
+    template_part = None
+    if label.template.all():
+        template_part = label.template.all()[0]	
+	form = TemplatePartEditForm(initial={'data_field': template_part.data_field, 'horizontal_align':template_part.horizontal_align, 'vertical_align': template_part.vertical_align, 'top':template_part.top, 'left': template_part.left, 'font_family':template_part.font_family,'font_size':template_part.font_size,'background_image':template_part.background_image })
+	#label.form = ProductListingForm(label, instance=label.product_listing)
+	
+
+
+    if request.method == 'POST':
+		data_field = request.POST['data_field']
+		horizontal_align = request.POST['horizontal_align']
+		vertical_align = request.POST['vertical_align']
+		font_family=request.POST['font_family']
+		font_size = request.POST['font_size']
+		background_image = request.POST['background_image']
+		TemplatePart.edit_template_part(label)
+	
+		template = Template.get_or_create_def_template(client, size, category)
+		if LabelTemplate.edit_template(client, template_id,  size, font_family, category):
+			messages.success(request, "Changes Saved.")
+		else:
+			messages.success(request, "Template already exists.")
+    params = {
+		'client': client,
+		'form': form,
+		'label':labelobj,
+		'template_part':template_part,
+		}
+    return render(request, 'update_template.html', params) 
+		
